@@ -11,7 +11,7 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
 - **Instantaneous TPS only**: a rolling 5s window samples streamed output (UTF-8 bytes / 5 estimate); the reading shows `--` after 1.5s without new tokens and resets on step boundaries
 - **Visibility follows the host row, zero adaptation**: the badge lives inside the "Deep diving… 7分25秒" row, so it disappears with the row when the turn ends or a takeover panel (question/approval) hides the composer flow — no hide logic for todo strips, queue rows, or question panels
 - **No duplication of built-in stats**: window averages (AVG/TTFT/token totals) are the built-in StatsLine's job; this plugin deliberately owns only the instantaneous rate
-- **Hover fade**: a 2s hover dwell fades the badge out and makes it click-through (`pointer-events: none`); while hidden it stays hidden for as long as the cursor is on or near the badge (8px margin) and restores the moment the cursor moves away — a parked cursor never loops the cycle
+- **Hover fade**: a 2s hover dwell fades the badge out and makes it click-through (`pointer-events: none`); while hidden it stays hidden for as long as the cursor is on or near the badge (8px margin), and once the cursor moves away a 3s grace period elapses before it restores (a return to the badge area cancels the pending restore) — a parked cursor never loops the cycle
 - **Pure front-end**: all readings derive from the conversation snapshot — no store, no event listeners, no network calls
 
 ## Installation (AI installation guide)
@@ -85,7 +85,7 @@ The row (and the badge) disappear when the turn ends or a takeover panel appears
 ## Usage notes
 
 - Badge type is 14px/500 (`--dsw-font-s-strong-14`) so Latin capitals and digits (~0.7em visual height) read comparably against the 13px full-square CJK clock glyphs
-- Hover 2s → fade → click-through; stays hidden while the cursor is on or near the badge (8px margin), restores on leave; re-hovering starts the dwell again
+- Hover 2s → fade → click-through; stays hidden while the cursor is on or near the badge (8px margin), restores 3s after the cursor leaves (a return cancels the restore); re-hovering starts the dwell again
 - All timings are compile-time constants in `src/client/TpsOverlay.tsx`; there is no client-plugin config channel yet
 
 ## Relationship to the official package

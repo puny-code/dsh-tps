@@ -211,9 +211,12 @@ describe('TpsOverlay component', () => {
     expect(badge!.className).toContain(css.hidden)
     expect(badge!.className).not.toContain(css.fading)
 
-    // The cursor leaves the badge area → the badge restores.
+    // The cursor leaves the badge area: the restore waits the grace period
+    // (copying nearby text must not be interrupted by a popping badge).
     fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
-    await act(async () => { vi.advanceTimersByTime(0) })
+    await act(async () => { vi.advanceTimersByTime(1_000) })
+    expect(badge!.className).toContain(css.hidden)
+    await act(async () => { vi.advanceTimersByTime(2_000) })
     expect(badge!.className).not.toContain(css.hidden)
   })
 
@@ -248,10 +251,13 @@ describe('TpsOverlay component', () => {
     await act(async () => { vi.advanceTimersByTime(5_000) })
     expect(badge.className).toContain(css.hidden)
 
-    // The cursor leaves the badge area → the badge restores, and because the
-    // cursor is outside, no synthetic enter can restart the dwell.
+    // The cursor leaves the badge area: the restore waits the 3s grace
+    // period, and because the cursor is outside when it lands, no synthetic
+    // enter can restart the dwell.
     fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
-    await act(async () => { vi.advanceTimersByTime(0) })
+    await act(async () => { vi.advanceTimersByTime(2_000) })
+    expect(badge.className).toContain(css.hidden)
+    await act(async () => { vi.advanceTimersByTime(1_000) })
     expect(badge.className).not.toContain(css.hidden)
     await act(async () => { vi.advanceTimersByTime(2_500) })
     expect(badge.className).not.toContain(css.fading)
@@ -283,9 +289,38 @@ describe('TpsOverlay component', () => {
     await act(async () => { vi.advanceTimersByTime(0) })
     expect(badge.className).toContain(css.hidden)
 
-    // Cursor leaves the padded area (x=120 > 108) → restores.
+    // Cursor leaves the padded area (x=120 > 108): still hidden during the
+    // grace period, then restores.
     fireEvent.mouseMove(window, { clientX: 120, clientY: 15 })
-    await act(async () => { vi.advanceTimersByTime(0) })
+    await act(async () => { vi.advanceTimersByTime(2_000) })
+    expect(badge.className).toContain(css.hidden)
+    await act(async () => { vi.advanceTimersByTime(1_000) })
+    expect(badge.className).not.toContain(css.hidden)
+  })
+
+  it('a return to the badge area during the grace period cancels the pending restore', async () => {
+    vi.useFakeTimers()
+    mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
+    const snapshot = runningSnapshot()
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const badge = view.container.querySelector('[data-tps-badge]')!
+
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
+    fireEvent.mouseEnter(badge)
+    await act(async () => { vi.advanceTimersByTime(2_300) })
+    expect(badge.className).toContain(css.hidden)
+
+    // Leave the area (starts the 3s grace timer), then come back near it
+    // before the timer fires: the restore is cancelled, still hidden.
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(1_000) })
+    fireEvent.mouseMove(window, { clientX: 106, clientY: 15 }) // inside the 8px margin
+    await act(async () => { vi.advanceTimersByTime(3_000) })
+    expect(badge.className).toContain(css.hidden)
+
+    // Leaving again restarts the grace period and restores after it.
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(3_000) })
     expect(badge.className).not.toContain(css.hidden)
   })
 
