@@ -251,6 +251,41 @@ describe('TpsOverlay component', () => {
     await act(async () => { vi.advanceTimersByTime(2_000) })
     expect(badge.className).toContain(css.fading)
   })
+
+  it('a restore under a drifted badge does not restart the dwell: the point-check miss is absorbed by the restore window', async () => {
+    vi.useFakeTimers()
+    // The badge sits at rect A while the cursor parks on it.
+    mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
+    const snapshot = runningSnapshot()
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const badge = view.container.querySelector('[data-tps-badge]')!
+
+    // Dwell the badge into the hidden state.
+    fireEvent.mouseEnter(badge)
+    await act(async () => { vi.advanceTimersByTime(2_300) })
+    expect(badge.className).toContain(css.hidden)
+
+    // While hidden the status row drifts down: rect B no longer contains the
+    // parked cursor (50,15), so the restore point check misses.
+    mockBadgeRect({ left: 0, top: 50, right: 100, bottom: 80 })
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(3_000) })
+    expect(badge.className).not.toContain(css.hidden)
+
+    // The restore's synthetic enter/leave pair arrives inside the window and
+    // must be ignored — otherwise the parked cursor would restart the dwell.
+    fireEvent.mouseLeave(badge)
+    fireEvent.mouseEnter(badge)
+    await act(async () => { vi.advanceTimersByTime(2_500) })
+    expect(badge.className).not.toContain(css.fading)
+    expect(badge.className).not.toContain(css.hidden)
+
+    // After the window a real leave-and-re-enter starts the timer normally.
+    fireEvent.mouseLeave(badge)
+    fireEvent.mouseEnter(badge)
+    await act(async () => { vi.advanceTimersByTime(2_000) })
+    expect(badge.className).toContain(css.fading)
+  })
 })
 
 describe('ui-tps node half', () => {
