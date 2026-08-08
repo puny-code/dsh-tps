@@ -20,12 +20,10 @@ import css from './TpsOverlay.module.css'
 
 /** Hover dwell before the badge starts fading (ms). */
 const HIDE_DWELL_MS = 2_000
-/** Fully-hidden pause before the badge restores (ms). */
-const HIDE_RESTORE_MS = 3_000
 /** Fade transition duration (ms) — the CSS transition in TpsOverlay.module.css. */
 const FADE_MS = 300
-/** Post-restore window (ms) during which synthetic enter/leave events are ignored. */
-const RESTORE_IGNORE_MS = 300
+/** Cursor margin (px) around the badge counted as "on the badge" while hidden. */
+const HIDE_AREA_PADDING = 8
 /** Staleness re-evaluation cadence while a turn is running (ms). */
 const LIVE_TICK_MS = 1_000
 
@@ -104,73 +102,68 @@ export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlay
 
   // Hover-fade lifecycle: dwelling on the badge fades it out (the hidden
   // class drops pointer events, so the cursor passes through to whatever is
-  // underneath), and a restore pause brings it back. Leaving during the
-  // dwell or the fade cancels the cycle. The window mousemove listener keeps
-  // the last cursor position so the restore can tell whether the cursor
-  // never left the badge area while it was hidden — in that case the dwell
-  // must not restart until the cursor leaves and re-enters. That point check
-  // is a hint, not a guarantee: the status row moves while streaming, so a
-  // parked cursor can drift out of (or into) the badge rect during the
-  // hidden pause. The restore window therefore also ignores enter/leave
-  // events for a short moment after restoring, which absorbs the synthetic
-  // mouseenter the browser fires when pointer-events come back — without it,
-  // a stationary cursor would restart the dwell every cycle.
+  // underneath). While hidden the badge stays hidden for as long as the
+  // cursor remains on or near its area, and restores the moment the cursor
+  // moves away — driven by the window mousemove listener (the badge itself
+  // cannot see pointer events while hidden). Because the restore only ever
+  // happens with the cursor already outside, no synthetic enter can restart
+  // the dwell, and a parked cursor can never loop the cycle. Leaving during
+  // the dwell or the fade cancels the cycle.
   const badgeRef = useRef<HTMLSpanElement | null>(null)
   const mousePosRef = useRef<Point | null>(null)
-  const pendingExitRef = useRef(false)
-  const ignorePointerUntilRef = useRef(0)
+  const phaseRef = useRef<BadgePhase>('shown')
   const [phase, setPhase] = useState<BadgePhase>('shown')
   const dwellRef = useRef<number>(0)
   const fadeRef = useRef<number>(0)
-  const restoreRef = useRef<number>(0)
+
+  const updatePhase = (next: BadgePhase): void => {
+    phaseRef.current = next
+    setPhase(next)
+  }
 
   useEffect(() => {
     const onMove = (event: MouseEvent): void => {
       mousePosRef.current = { x: event.clientX, y: event.clientY }
+      if (phaseRef.current !== 'hidden') return
+      // Restore as soon as the cursor leaves the badge area (with the
+      // nearby margin); a parked or nearby cursor keeps the badge hidden.
+      const badge = badgeRef.current
+      const pos = mousePosRef.current
+      if (badge === null || pos === null) return
+      const rect = badge.getBoundingClientRect()
+      if (!pointInRect(pos, {
+        left: rect.left - HIDE_AREA_PADDING,
+        top: rect.top - HIDE_AREA_PADDING,
+        right: rect.right + HIDE_AREA_PADDING,
+        bottom: rect.bottom + HIDE_AREA_PADDING,
+      })) {
+        window.clearTimeout(dwellRef.current)
+        window.clearTimeout(fadeRef.current)
+        updatePhase('shown')
+      }
     }
     window.addEventListener('mousemove', onMove)
     return () => {
       window.removeEventListener('mousemove', onMove)
       window.clearTimeout(dwellRef.current)
       window.clearTimeout(fadeRef.current)
-      window.clearTimeout(restoreRef.current)
     }
   }, [])
 
   const onMouseEnter = (): void => {
-    if (phase !== 'shown' || pendingExitRef.current) return
-    if (Date.now() < ignorePointerUntilRef.current) return
+    if (phase !== 'shown') return
     dwellRef.current = window.setTimeout(() => {
-      setPhase('fading')
+      updatePhase('fading')
       fadeRef.current = window.setTimeout(() => {
-        setPhase('hidden')
-        restoreRef.current = window.setTimeout(() => {
-          // The cursor may have sat on the badge through the whole hidden
-          // pause; only a leave-and-re-enter starts the dwell then. The
-          // restore window absorbs the synthetic enter/leave pair the
-          // pointer-events toggle fires, so a parked cursor never restarts
-          // the cycle by itself even if the point check missed.
-          const badge = badgeRef.current
-          const pos = mousePosRef.current
-          pendingExitRef.current = badge !== null
-            && pos !== null
-            && pointInRect(pos, badge.getBoundingClientRect())
-          ignorePointerUntilRef.current = Date.now() + RESTORE_IGNORE_MS
-          setPhase('shown')
-        }, HIDE_RESTORE_MS)
+        updatePhase('hidden')
       }, FADE_MS)
     }, HIDE_DWELL_MS)
   }
 
   const onMouseLeave = (): void => {
-    // The restore window's leave is the synthetic half of the pointer-events
-    // toggle pair; clearing pendingExit there would re-arm the dwell under a
-    // parked cursor.
-    if (Date.now() < ignorePointerUntilRef.current) return
     window.clearTimeout(dwellRef.current)
     window.clearTimeout(fadeRef.current)
-    pendingExitRef.current = false
-    setPhase(current => (current === 'fading' ? 'shown' : current))
+    if (phase === 'fading') updatePhase('shown')
   }
 
   const liveText = live === null ? t('dash') : formatRate(live)

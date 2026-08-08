@@ -188,8 +188,9 @@ describe('TpsOverlay component', () => {
     expect(view.container.textContent).toContain('TPS --')
   })
 
-  it('fades out after the hover dwell and restores after the pause', async () => {
+  it('fades out after the hover dwell and stays hidden while the cursor stays on it', async () => {
     vi.useFakeTimers()
+    mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
     const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')
@@ -197,15 +198,22 @@ describe('TpsOverlay component', () => {
     expect(badge!.className).toContain(css.root)
     expect(badge!.className).not.toContain(css.hidden)
 
-    // Dwelling on the badge fades it, then hides it (click-through).
+    // The cursor moves onto the badge, then dwells it into the hidden state.
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
     fireEvent.mouseEnter(badge!)
     await act(async () => { vi.advanceTimersByTime(2_000) })
     expect(badge!.className).toContain(css.fading)
     await act(async () => { vi.advanceTimersByTime(300) })
     expect(badge!.className).toContain(css.hidden)
 
-    // The restore pause brings it back.
-    await act(async () => { vi.advanceTimersByTime(3_000) })
+    // A parked cursor keeps it hidden: no auto-restore, no re-fade cycle.
+    await act(async () => { vi.advanceTimersByTime(5_000) })
+    expect(badge!.className).toContain(css.hidden)
+    expect(badge!.className).not.toContain(css.fading)
+
+    // The cursor leaves the badge area → the badge restores.
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(0) })
     expect(badge!.className).not.toContain(css.hidden)
   })
 
@@ -223,72 +231,64 @@ describe('TpsOverlay component', () => {
     expect(badge.className).not.toContain(css.hidden)
   })
 
-  it('a restore with the cursor still on the badge does not restart the dwell until leave-and-re-enter', async () => {
+  it('restores only after the cursor leaves the badge area, and re-hovering restarts the dwell', async () => {
     vi.useFakeTimers()
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
     const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
-    // Dwell the badge into the hidden state.
+    // Dwell the badge into the hidden state with the cursor parked on it.
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
     fireEvent.mouseEnter(badge)
     await act(async () => { vi.advanceTimersByTime(2_300) })
     expect(badge.className).toContain(css.hidden)
 
-    // The cursor sits on the badge area through the hidden pause.
-    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
-    await act(async () => { vi.advanceTimersByTime(3_000) })
-    expect(badge.className).not.toContain(css.hidden)
+    // A parked cursor never restarts the cycle on its own.
+    await act(async () => { vi.advanceTimersByTime(5_000) })
+    expect(badge.className).toContain(css.hidden)
 
-    // The restored badge must not start the dwell: long enough to fade if it had.
+    // The cursor leaves the badge area → the badge restores, and because the
+    // cursor is outside, no synthetic enter can restart the dwell.
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(0) })
+    expect(badge.className).not.toContain(css.hidden)
     await act(async () => { vi.advanceTimersByTime(2_500) })
     expect(badge.className).not.toContain(css.fading)
     expect(badge.className).not.toContain(css.hidden)
 
-    // Leaving and re-entering starts the timer normally.
-    fireEvent.mouseLeave(badge)
+    // Moving back onto the badge and hovering starts the timer normally.
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
     fireEvent.mouseEnter(badge)
     await act(async () => { vi.advanceTimersByTime(2_000) })
     expect(badge.className).toContain(css.fading)
   })
 
-  it('a restore under a drifted badge does not restart the dwell: the point-check miss is absorbed by the restore window', async () => {
+  it('stays hidden while the cursor is near the badge and restores after it leaves the padded area', async () => {
     vi.useFakeTimers()
-    // The badge sits at rect A while the cursor parks on it.
+    // Badge rect {0,0,100,30}; the padded hide area extends 8px beyond it.
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
     const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
-    // Dwell the badge into the hidden state.
+    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
     fireEvent.mouseEnter(badge)
     await act(async () => { vi.advanceTimersByTime(2_300) })
     expect(badge.className).toContain(css.hidden)
 
-    // While hidden the status row drifts down: rect B no longer contains the
-    // parked cursor (50,15), so the restore point check misses.
-    mockBadgeRect({ left: 0, top: 50, right: 100, bottom: 80 })
-    fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
-    await act(async () => { vi.advanceTimersByTime(3_000) })
-    expect(badge.className).not.toContain(css.hidden)
+    // Cursor near the badge: outside the rect (x=106 > right=100) but inside
+    // the padded area (right=108) → still hidden.
+    fireEvent.mouseMove(window, { clientX: 106, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(0) })
+    expect(badge.className).toContain(css.hidden)
 
-    // The restore's synthetic enter/leave pair arrives inside the window and
-    // must be ignored — otherwise the parked cursor would restart the dwell.
-    fireEvent.mouseLeave(badge)
-    fireEvent.mouseEnter(badge)
-    await act(async () => { vi.advanceTimersByTime(2_500) })
-    expect(badge.className).not.toContain(css.fading)
+    // Cursor leaves the padded area (x=120 > 108) → restores.
+    fireEvent.mouseMove(window, { clientX: 120, clientY: 15 })
+    await act(async () => { vi.advanceTimersByTime(0) })
     expect(badge.className).not.toContain(css.hidden)
-
-    // After the window a real leave-and-re-enter starts the timer normally.
-    fireEvent.mouseLeave(badge)
-    fireEvent.mouseEnter(badge)
-    await act(async () => { vi.advanceTimersByTime(2_000) })
-    expect(badge.className).toContain(css.fading)
   })
-})
 
-describe('ui-tps node half', () => {
   it('the node apply is an inert loader seat', () => {
     expect(() => { nodeApply() }).not.toThrow()
   })
