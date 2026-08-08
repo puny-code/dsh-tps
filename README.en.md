@@ -8,7 +8,7 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
 
 ## Features
 
-- **Instantaneous TPS only**: a rolling 5s window samples streamed output (UTF-8 bytes / 5 estimate); the reading shows `--` after 1.5s without new tokens and resets on step boundaries
+- **Instantaneous TPS only**: a rolling 5s window samples streamed output (UTF-8 bytes / 5 estimate); the reading shows `--` after 1.5s without new tokens and resets on step boundaries; the badge mounts only once the first value arrives (one-shot fade-in), so a fresh turn never shows a bare `TPS --`, while mid-turn pauses keep the dash
 - **Visibility follows the host row, zero adaptation**: the badge lives inside the "Deep diving… 7分25秒" row, so it disappears with the row when the turn ends or a takeover panel (question/approval) hides the composer flow — no hide logic for todo strips, queue rows, or question panels
 - **No duplication of built-in stats**: window averages (AVG/TTFT/token totals) are the built-in StatsLine's job; this plugin deliberately owns only the instantaneous rate
 - **Hover fade**: a 2s hover dwell fades the badge out and makes it click-through (`pointer-events: none`); while hidden it stays hidden for as long as the cursor is on or near the badge (8px margin), and once the cursor moves away a 3s grace period elapses before it restores (a return to the badge area cancels the pending restore) — a parked cursor never loops the cycle

@@ -102,6 +102,15 @@ export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlay
     return () => { window.clearInterval(timer) }
   }, [running])
 
+  // First appearance: the badge stays unmounted until the first live value
+  // arrives, so a fresh turn never shows a bare "TPS --" beside "Deep
+  // diving…" (the mount also runs the fade-in animation). Mid-turn pauses
+  // keep the dash — everShownValue is per mount, i.e. per turn row.
+  const everShownValueRef = useRef(false)
+  useEffect(() => {
+    if (live !== null) everShownValueRef.current = true
+  }, [live])
+
   // Hover-fade lifecycle: dwelling on the badge fades it out (the hidden
   // class drops pointer events, so the cursor passes through to whatever is
   // underneath). While hidden the badge stays hidden for as long as the
@@ -181,11 +190,14 @@ export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlay
   }
 
   const liveText = live === null ? t('dash') : formatRate(live)
+  // Wait for the first value before mounting (see everShownValueRef above).
+  if (live === null && !everShownValueRef.current) return null
   return (
     <span
       ref={badgeRef}
       className={clsx(
         css.root,
+        css.enter,
         phase === 'fading' && css.fading,
         phase === 'hidden' && css.hidden,
       )}

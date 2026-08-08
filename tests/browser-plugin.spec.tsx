@@ -129,9 +129,25 @@ describe('ui-tps plugin registration', () => {
 })
 
 describe('TpsOverlay component', () => {
-  it('renders a dash while the stream has no output yet', () => {
-    const view = render(<TpsOverlay useSession={useSessionOf(() => conversationSnapshot())} t={t} />)
+  it('renders nothing until the first live value, then keeps the dash during mid-turn pauses', () => {
+    let snapshot = conversationSnapshot()
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    // First appearance waits for a value: no bare "TPS --" next to the row.
+    expect(view.container.firstChild).toBeNull()
+
+    // The first value arrives → the badge mounts with the value.
+    snapshot = runningSnapshot()
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    expect(view.container.textContent).toContain('TPS 3.00')
+
+    // A mid-turn pause shows the dash (and value recovery shows the number
+    // again without remounting).
+    snapshot = { ...snapshot, partial: null }
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS --')
+    snapshot = runningSnapshot()
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    expect(view.container.textContent).toContain('TPS 3.00')
   })
 
   it('samples the streaming partial into a live rate and refreshes on deltas', async () => {
