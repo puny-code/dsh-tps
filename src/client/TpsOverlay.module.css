@@ -1,0 +1,36 @@
+/* TPS badge inside the running-turn status row: follows the row's layout
+   after the elapsed clock. Latin capitals and digits render at ~0.7em
+   visual height against full-square CJK glyphs, so the badge uses the 14px
+   strong face next to the 13px clock to read at a comparable visual size.
+   The row's shimmer text fills itself via background-clip: text with a
+   transparent color, so the badge resets its own fill. The fade transition
+   duration here is the FADE_MS constant in TpsOverlay.tsx — change both
+   together. */
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  font: var(--dsw-font-s-strong-14);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-caption);
+  -webkit-text-fill-color: var(--dsw-alias-label-caption);
+  white-space: nowrap;
+  user-select: none;
+  transition: opacity 300ms ease, visibility 300ms ease;
+}
+
+/* Fading: opacity drops while the badge stays interactive (mouse-leave
+   during the fade restores it). */
+.fading {
+  opacity: 0;
+}
+
+/* Hidden: fully out of the pointer and accessibility trees (click-through),
+   until the restore pause elapses. */
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}

@@ -1,0 +1,174 @@
+// TPS badge: live tokens-per-second rendered inside the running-turn status
+// row ("Deep diving…"), sharing that row's visibility lifecycle — the row
+// exists only while a turn runs, so the badge disappears with it when the
+// turn ends or a takeover panel hides the composer flow. The live rate
+// rides a rolling window of estimated-token samples over the streaming
+// partial; settled averages are the built-in StatsLine's job, not this
+// plugin's. A hover dwell fades the badge out (click-through while hidden)
+// and a pause restores it; a restore while the cursor still rests on the
+// badge does not restart the dwell — the timer begins only after the cursor
+// leaves and re-enters.
+
+import { memo, useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
+import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
+import type { PropsLocale, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import {
+  estimatePartialTokens, formatRate, liveRate, pushSample, type TpsSample,
+} from './tps-metrics.ts'
+import css from './TpsOverlay.module.css'
+
+/** Hover dwell before the badge starts fading (ms). */
+const HIDE_DWELL_MS = 2_000
+/** Fully-hidden pause before the badge restores (ms). */
+const HIDE_RESTORE_MS = 3_000
+/** Fade transition duration (ms) — the CSS transition in TpsOverlay.module.css. */
+const FADE_MS = 300
+/** Staleness re-evaluation cadence while a turn is running (ms). */
+const LIVE_TICK_MS = 1_000
+
+/** Badge visibility lifecycle: shown → fading (hover dwell) → hidden (click-through) → shown (restore). */
+export type BadgePhase = 'shown' | 'fading' | 'hidden'
+
+/** Props: the conversation-snapshot selector plus the locale seat. */
+export interface TpsOverlayProps {
+  useSession: SnapshotSelectorHook<ConversationSnapshot>
+  /** The badge's locale seat (the plugin's `tps` namespace). */
+  t: PropsLocale<'tps'>['t']
+}
+
+/** A 2D point (client coordinates) and a rectangle (client geometry). */
+export interface Point { x: number; y: number }
+export interface Rect { left: number; top: number; right: number; bottom: number }
+
+/**
+ * Whether a point falls inside a rectangle, inclusive of the edges.
+ * @param point - the point.
+ * @param rect - the rectangle.
+ * @returns true when the point is inside.
+ */
+export function pointInRect(point: Point, rect: Rect): boolean {
+  return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom
+}
+
+export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlayProps) {
+  const running = useSession(s => s.running)
+  const partial = useSession(s => s.partial)
+
+  // Live-rate sampling: the effect runs per partial publication (the runtime
+  // publishes the partial on every visible delta). Each delta appends an
+  // estimated-token sample; a step boundary restarts the window (the new
+  // step's observed content opens it, so a fresh stream shows a rate from
+  // its first chunk instead of a blank until the second delta).
+  const samplesRef = useRef<TpsSample[]>([])
+  const stepKeyRef = useRef<string | null>(null)
+  const lastTokensRef = useRef(0)
+  const [live, setLive] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!running || partial === null) {
+      samplesRef.current = []
+      stepKeyRef.current = null
+      lastTokensRef.current = 0
+      setLive(null)
+      return
+    }
+    const stepKey = `${partial.turn}:${partial.step}`
+    const total = estimatePartialTokens(partial.blocks)
+    if (stepKey !== stepKeyRef.current) {
+      stepKeyRef.current = stepKey
+      lastTokensRef.current = total
+      samplesRef.current = total > 0 ? pushSample([], { at: Date.now(), tokens: total }) : []
+      setLive(total > 0 ? liveRate(samplesRef.current, Date.now()) : null)
+      return
+    }
+    const delta = Math.max(0, total - lastTokensRef.current)
+    lastTokensRef.current = total
+    if (delta > 0) {
+      samplesRef.current = pushSample(samplesRef.current, { at: Date.now(), tokens: delta })
+    }
+    setLive(liveRate(samplesRef.current, Date.now()))
+  }, [running, partial])
+
+  // While a turn runs, re-evaluate the live rate on a cadence so a paused
+  // stream ages to null instead of freezing the last reading.
+  useEffect(() => {
+    if (!running) return
+    const timer = window.setInterval(() => {
+      setLive(samplesRef.current.length > 0 ? liveRate(samplesRef.current, Date.now()) : null)
+    }, LIVE_TICK_MS)
+    return () => { window.clearInterval(timer) }
+  }, [running])
+
+  // Hover-fade lifecycle: dwelling on the badge fades it out (the hidden
+  // class drops pointer events, so the cursor passes through to whatever is
+  // underneath), and a restore pause brings it back. Leaving during the
+  // dwell or the fade cancels the cycle. The window mousemove listener keeps
+  // the last cursor position so the restore can tell whether the cursor
+  // never left the badge area while it was hidden — in that case the dwell
+  // must not restart until the cursor leaves and re-enters.
+  const badgeRef = useRef<HTMLSpanElement | null>(null)
+  const mousePosRef = useRef<Point | null>(null)
+  const pendingExitRef = useRef(false)
+  const [phase, setPhase] = useState<BadgePhase>('shown')
+  const dwellRef = useRef<number>(0)
+  const fadeRef = useRef<number>(0)
+  const restoreRef = useRef<number>(0)
+
+  useEffect(() => {
+    const onMove = (event: MouseEvent): void => {
+      mousePosRef.current = { x: event.clientX, y: event.clientY }
+    }
+    window.addEventListener('mousemove', onMove)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.clearTimeout(dwellRef.current)
+      window.clearTimeout(fadeRef.current)
+      window.clearTimeout(restoreRef.current)
+    }
+  }, [])
+
+  const onMouseEnter = (): void => {
+    if (phase !== 'shown' || pendingExitRef.current) return
+    dwellRef.current = window.setTimeout(() => {
+      setPhase('fading')
+      fadeRef.current = window.setTimeout(() => {
+        setPhase('hidden')
+        restoreRef.current = window.setTimeout(() => {
+          // The cursor may have sat on the badge through the whole hidden
+          // pause; only a leave-and-re-enter starts the dwell then.
+          const badge = badgeRef.current
+          const pos = mousePosRef.current
+          pendingExitRef.current = badge !== null
+            && pos !== null
+            && pointInRect(pos, badge.getBoundingClientRect())
+          setPhase('shown')
+        }, HIDE_RESTORE_MS)
+      }, FADE_MS)
+    }, HIDE_DWELL_MS)
+  }
+
+  const onMouseLeave = (): void => {
+    window.clearTimeout(dwellRef.current)
+    window.clearTimeout(fadeRef.current)
+    pendingExitRef.current = false
+    setPhase(current => (current === 'fading' ? 'shown' : current))
+  }
+
+  const liveText = live === null ? t('dash') : formatRate(live)
+  return (
+    <span
+      ref={badgeRef}
+      className={clsx(
+        css.root,
+        phase === 'fading' && css.fading,
+        phase === 'hidden' && css.hidden,
+      )}
+      data-tps-badge=""
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {t('display', { live: liveText })}
+    </span>
+  )
+})
