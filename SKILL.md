@@ -73,4 +73,4 @@ dsh plugin --profile web add <dsh-tps 仓库路径或 github:dsh-external/dsh-tp
 ## 边界
 
 - 槽位缺失时插件**静默不工作**（`slots.inject` 等待声明，无报错）——应用补丁后必须按第 3 步验证 grep。
-- 该槽位已合入作者每日快照（`dsh2026/test-Small-tailqwq` 的 `snapshots/20260808T121140Z-7f25d3e98c` 分支）；快照更新到该版本后无需本步骤。
+- 槽位改动仅存在于作者个人快照仓库（`dsh2026/test-Small-tailqwq`），每日快照更新是独立流程，个人推送不会自动到达其他成员；目前一律按本技能打补丁，直到槽位合入共享快照更新流程。

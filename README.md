@@ -31,7 +31,7 @@ English: [README.en.md](README.en.md)
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   最新每日快照（`dsh2026/test-Small-tailqwq` 的 `snapshots/20260808T121140Z-7f25d3e98c` 分支）已内置该槽位，更新快照后无需打补丁。
+   说明：槽位改动虽已提交到作者的个人快照仓库（`dsh2026/test-Small-tailqwq`），但内测组的每日快照是**独立的更新流程**——个人仓库的推送不会自动进入其他成员的快照。因此目前**所有内测人员都应按本步骤打补丁**（或使用下方 AI 安装技能自动完成）；待槽位合入共享的快照更新流程后，方可免去此步骤。
 
 2. **私有仓库访问**：本仓库为 dsh-external 内测私有仓库，需要已登录的 `gh`（或 PAT）：
 

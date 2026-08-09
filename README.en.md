@@ -31,7 +31,7 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   The latest daily snapshot (branch `snapshots/20260808T121140Z-7f25d3e98c` of `dsh2026/test-Small-tailqwq`) already ships the slot, so updating the snapshot needs no patch.
+   Note: the slot change is committed to the author's *personal* snapshot repo (`dsh2026/test-Small-tailqwq`), but the group's daily snapshots are updated by a **separate process** — pushes to a personal repo do not automatically reach other members' snapshots. So for now **every internal tester applies this patch** (or lets the AI install skill below do it); the step becomes optional only once the slot lands in the shared snapshot-update flow.
 
 2. **Private repo access**: this is a private dsh-external repository; use an authenticated `gh` (or a PAT):
 
