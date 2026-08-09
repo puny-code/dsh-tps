@@ -16,6 +16,9 @@ English: [README.en.md](README.en.md)
 
 ## 安装（AI 安装指南）
 
+> **零手动改码**：本仓库附 `SKILL.md`（dsh-tps-install）。内测人员无需自己改代码——把本仓库 clone 下来，告诉你的 AI「按 dsh-tps 仓库的 `SKILL.md` 安装 dsh-tps」，AI 会自动完成：检测槽位 → 缺失时应用补丁（`patches/turnstatus-slot.patch`）→ 验证 → 重建 ui-conversation bundle → bundle 方式挂载插件 → 验收。也可把 `SKILL.md` 放进本地 skills 目录供 AI 直接发现。
+
+
 ### 前置条件
 
 1. **harness checkout 包含 `conversation.chat.turnStatus` 槽位**。检查方式：

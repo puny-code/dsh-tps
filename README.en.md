@@ -16,6 +16,9 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
 
 ## Installation (AI installation guide)
 
+> **Zero manual code edits**: this repo ships `SKILL.md` (`dsh-tps-install`). Internal testers do not edit code themselves — clone this repo and tell your AI "install dsh-tps following `SKILL.md` in the dsh-tps repo"; the AI will detect the slot, apply `patches/turnstatus-slot.patch` when missing, verify, rebuild the ui-conversation bundle, mount the plugin via the bundle route, and run acceptance. Alternatively drop `SKILL.md` into a local skills directory for the AI to discover.
+
+
 ### Prerequisites
 
 1. **A harness checkout containing the `conversation.chat.turnStatus` slot**. Verify:
