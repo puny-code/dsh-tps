@@ -25,9 +25,15 @@
     ],
     "platform": "web"
   },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.yml"
+    }
+  },
   "scripts": {
     "build": "tsc && tsdown",
     "dev": "tsdown --watch",
+    "prepare": "pnpm run build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

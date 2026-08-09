@@ -49,7 +49,22 @@ cd dsh-tps
 pnpm install
 ```
 
-### 挂载到 Web profile
+### 挂载到 Web profile（bundle 方式，推荐）
+
+本包声明了 `dsh.bundle`（patch 指向仓库内的 `cordis.yml`），因此可以像官方插件一样作为 **profile bundle 层**安装——`dsh plugin` 会在安装后自动把它追加进 profile 的 `dsh.profile.bundles`，无需手写任何 insert：
+
+```sh
+# 从本地 checkout 安装（会自动构建 + 进 bundles 层）
+cd ~/Projects/deepseek-harness
+dsh plugin --profile web add <本仓库路径>
+
+# 或通过 GitHub 依赖安装
+dsh plugin --profile web add github:dsh-external/dsh-tps
+```
+
+> 从 git 安装时，pnpm 会执行本包的 `prepare` 构建脚本；若 pnpm 拦截构建，按提示把包加入 profile 的 `pnpm-workspace.yaml` `allowBuilds` 后重试。
+
+### 手动挂载（备选）
 
 在 harness 的 Web profile（`~/.dsh/profiles/web/cordis.patch.yml`）追加：
 

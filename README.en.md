@@ -49,7 +49,22 @@ cd dsh-tps
 pnpm install
 ```
 
-### Mount into the Web profile
+### Mount into the Web profile (bundle way, recommended)
+
+This package declares `dsh.bundle` (patch → `cordis.yml` in this repo), so it installs like an official plugin as a **profile bundle layer** — `dsh plugin` appends it to the profile's `dsh.profile.bundles` after install, with no hand-written inserts:
+
+```sh
+# From a local checkout (auto-builds and joins the bundles layer)
+cd ~/Projects/deepseek-harness
+dsh plugin --profile web add <path-to-this-repo>
+
+# Or via a GitHub dependency
+dsh plugin --profile web add github:dsh-external/dsh-tps
+```
+
+> Git installs run this package's `prepare` build script; if pnpm blocks the build, add the package to the profile's `pnpm-workspace.yaml` `allowBuilds` as prompted and retry.
+
+### Manual mount (fallback)
 
 Append to the harness Web profile (`~/.dsh/profiles/web/cordis.patch.yml`):
 
