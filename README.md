@@ -14,12 +14,9 @@ English: [README.en.md](README.en.md)
 - **悬停淡出**：停留 2 秒淡出并变为可穿透（`pointer-events: none`）；隐藏期间光标在徽标上或其附近（外扩 8px）则保持隐藏，移开后经 3 秒宽限期才恢复（期间回到附近则取消恢复），光标停驻不会循环触发
 - **纯前端**：所有读数派生自会话快照，无 store、无事件监听、无网络调用
 
-## 安装（AI 安装指南）
+## 安装教程
 
-> **零手动改码**：本仓库附 `SKILL.md`（dsh-tps-install）。内测人员无需自己改代码——把本仓库 clone 下来，告诉你的 AI「按 dsh-tps 仓库的 `SKILL.md` 安装 dsh-tps」，AI 会自动完成：检测槽位 → 缺失时应用补丁（`patches/turnstatus-slot.patch`）→ 验证 → 重建 ui-conversation bundle → bundle 方式挂载插件 → 验收。也可把 `SKILL.md` 放进本地 skills 目录供 AI 直接发现。
-
-
-### 前置条件
+### 第 0 步：前置条件
 
 1. **harness checkout 包含 `conversation.chat.turnStatus` 槽位**。检查方式：
 
@@ -27,14 +24,14 @@ English: [README.en.md](README.en.md)
    grep -n "conversation.chat.turnStatus" <harness>/packages/client/ui-conversation/src/client/apply.ts
    ```
 
-   有输出即满足；没有则说明你的 harness 快照早于槽位合入（槽位已随作者 fork 的每日快照发布，见下），先应用本仓库附带的补丁：
+   有输出即满足；没有则说明你的 harness 快照早于槽位合入，先应用本仓库附带的补丁（只改 ui-conversation 四个文件：slots.ts / apply.ts / ChatView.tsx / ChatView.module.css，`git checkout` 可还原）：
 
    ```sh
    cd <harness>
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   补丁只改 ui-conversation 四个文件（slots.ts / apply.ts / ChatView.tsx / ChatView.module.css），可随时 `git checkout` 还原。最新每日快照（`dsh2026/test-Small-tailqwq` 的 `snapshots/20260808T121140Z-7f25d3e98c` 分支）已内置该槽位，更新快照后无需打补丁。
+   最新每日快照（`dsh2026/test-Small-tailqwq` 的 `snapshots/20260808T121140Z-7f25d3e98c` 分支）已内置该槽位，更新快照后无需打补丁。
 
 2. **私有仓库访问**：本仓库为 dsh-external 内测私有仓库，需要已登录的 `gh`（或 PAT）：
 
@@ -43,7 +40,72 @@ English: [README.en.md](README.en.md)
    git clone https://github.com/dsh-external/dsh-tps.git
    ```
 
-### 布局与依赖
+### 方式一：AI 自动安装（零手动改码，推荐）
+
+本仓库附 `SKILL.md`（dsh-tps-install）。clone 后告诉你的 AI「按 dsh-tps 仓库的 `SKILL.md` 安装 dsh-tps」，AI 会自动完成：检测槽位 → 缺失时应用补丁 → 验证 → 重建 ui-conversation bundle → 挂载插件 → 验收。也可把 `SKILL.md` 放进本地 skills 目录供 AI 直接发现。
+
+### 方式二：`dsh plugin` 命令安装（推荐手动方式）
+
+```sh
+cd <harness>
+dsh plugin --profile web add <dsh-tps 本地路径>
+# 或通过 GitHub 依赖
+dsh plugin --profile web add github:dsh-external/dsh-tps
+```
+
+本包声明了 `dsh.bundle`（patch 指向仓库内 `cordis.yml`），`dsh plugin` 会**自动**把它追加进 profile 的 `dsh.profile.bundles`（见下文「dsh 端点」），无需手写任何 insert。从 git 安装时若 pnpm 拦截构建，按提示把包加入 profile 的 `pnpm-workspace.yaml` `allowBuilds` 后重试。
+
+### 方式三：手动安装（无 `dsh plugin` 命令时）
+
+**步骤 1：添加依赖**。编辑 `~/.dsh/profiles/web/package.json` 的 `dependencies`：
+
+```json
+"dependencies": {
+  "@dsh-external/dsh-tps": "github:dsh-external/dsh-tps"
+}
+```
+
+（本地路径可用 `"@dsh-external/dsh-tps": "file:../dsh-tps"`，然后 `cd ~/.dsh/profiles/web && pnpm install`。）
+
+**步骤 2：添加 dsh 端点**（见下节）。**步骤 3：验证** `dsh --profile web --dump-config | grep -A1 tps`。
+
+> 备选挂载：也可直接在 profile 的 `cordis.patch.yml` 追加 insert 行，或用 `dsh web --patch ./cordis.yml` 作为启动 overlay（本仓库已附 `cordis.yml`）——这两种方式同样要求依赖图包含本包。
+
+### dsh 端点（`dsh.profile.bundles`）创建教程
+
+**什么是 dsh 端点**：profile 的 `dsh.profile.bundles` 数组是 profile 的**组合端点列表**——启动时按数组顺序叠加每个 bundle 的 patch 层（`dsh.bundle.patch` 指向的 `cordis.patch.yml`/`cordis.yml`），插件的插件行只有在该数组里才会进入组合配置。可以理解为"profile 挂载了哪些 bundle 层"的清单。
+
+**创建步骤**（继续方式三）：编辑 `~/.dsh/profiles/web/package.json`：
+
+```json
+{
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "@dsh-external/dsh-tps"
+      ]
+    }
+  }
+}
+```
+
+然后 `cd ~/.dsh/profiles/web && pnpm install`，并验证：
+
+```sh
+dsh --profile web --dump-config | grep -A1 tps
+# → - id: tps
+#     name: '@dsh-external/dsh-tps'
+```
+
+**为何需要手动添加端点**：
+
+- `dsh plugin --profile web add` 会在安装后**自动 reconcile**：检测到包声明了 `dsh.bundle`，就把包名追加进 `dsh.profile.bundles`。
+- 但**直接编辑 `package.json` 或 `pnpm add` 安装依赖时，`dsh.profile.bundles` 数组不会自动更新**——patch 层只从该数组加载。
+- **不添加端点的后果**：包被安装了，但它的 patch 层不进入组合 → 组合配置里没有 `tps` 行 → **插件静默不加载**（无报错）。手动添加端点 = 把 `dsh plugin add` 的 reconcile 那一步自己做掉。
+
+### 布局与依赖（开发本仓库时）
 
 插件通过 `link:` 开发依赖引用 harness checkout，默认约定两者平级：
 
@@ -52,45 +114,12 @@ deepseek-harness/   ← harness 源码 checkout（含 turnStatus 槽位）
 dsh-tps/            ← 本仓库
 ```
 
-若你的 checkout 布局不同，把 `package.json` 里所有 `link:../../deepseek-harness/...` 改为相对你布局的路径，然后：
-
-```sh
-cd dsh-tps
-pnpm install
-```
-
-### 挂载到 Web profile（bundle 方式，推荐）
-
-本包声明了 `dsh.bundle`（patch 指向仓库内的 `cordis.yml`），因此可以像官方插件一样作为 **profile bundle 层**安装——`dsh plugin` 会在安装后自动把它追加进 profile 的 `dsh.profile.bundles`，无需手写任何 insert：
-
-```sh
-# 从本地 checkout 安装（会自动构建 + 进 bundles 层）
-cd ~/Projects/deepseek-harness
-dsh plugin --profile web add <本仓库路径>
-
-# 或通过 GitHub 依赖安装
-dsh plugin --profile web add github:dsh-external/dsh-tps
-```
-
-> 从 git 安装时，pnpm 会执行本包的 `prepare` 构建脚本；若 pnpm 拦截构建，按提示把包加入 profile 的 `pnpm-workspace.yaml` `allowBuilds` 后重试。
-
-### 手动挂载（备选）
-
-在 harness 的 Web profile（`~/.dsh/profiles/web/cordis.patch.yml`）追加：
-
-```yaml
-- insert:
-    - id: tps
-      name: '@dsh-external/tps'
-```
-
-或作为启动 overlay：`dsh web --patch ./cordis.yml`（本仓库已附 `cordis.yml`）。
-
-同时确保 Web profile 的依赖图包含本包（bundle `package.json` 或 profile 的 `dsh.profile.bundles` 依赖声明），否则 Loader 无法解析行名。
+若你的 checkout 布局不同，把 `package.json` 里所有 `link:../../deepseek-harness/...` 改为相对你布局的路径，然后 `cd dsh-tps && pnpm install`。
 
 ### 构建与生效
 
 ```sh
+cd dsh-tps
 pnpm run build          # tsc + tsdown：产出 lib/index.js 与 lib/client.js
 ```
 
@@ -121,7 +150,7 @@ turn 结束或提问时整行消失。
 
 - **实时 token 为估算值**：流式 partial 不携带实时 token 计数，速率按 UTF-8 字节估算（bytes/5）；精确计数由持久化 token-usage 投影与内置 StatsLine 提供
 - **悬停时长固定**：停留/淡出时长与隐藏判定范围是编译期常量，暂无客户端插件配置通道可调
-- **依赖内测槽位**：需要含 `conversation.chat.turnStatus` 槽位的 harness（见前置条件）
+- **依赖内测槽位**：需要含 `conversation.chat.turnStatus` 槽位的 harness（见第 0 步）
 
 ## 许可
 
