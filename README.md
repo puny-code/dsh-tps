@@ -24,14 +24,14 @@ English: [README.en.md](README.en.md)
    grep -n "conversation.chat.turnStatus" <harness>/packages/client/ui-conversation/src/client/apply.ts
    ```
 
-   有输出即满足；没有则说明该槽位尚未合入你的 harness（它目前**只存在于作者 fork 的 ui-conversation 补丁中，未合入任何共享分支**），先应用本仓库附带的补丁：
+   有输出即满足；没有则说明你的 harness 快照早于槽位合入（槽位已随作者 fork 的每日快照发布，见下），先应用本仓库附带的补丁：
 
    ```sh
    cd <harness>
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   补丁只改 ui-conversation 四个文件（slots.ts / apply.ts / ChatView.tsx / ChatView.module.css），可随时 `git checkout` 还原。
+   补丁只改 ui-conversation 四个文件（slots.ts / apply.ts / ChatView.tsx / ChatView.module.css），可随时 `git checkout` 还原。最新每日快照（`dsh2026/test-Small-tailqwq` 的 `snapshots/20260808T121140Z-7f25d3e98c` 分支）已内置该槽位，更新快照后无需打补丁。
 
 2. **私有仓库访问**：本仓库为 dsh-external 内测私有仓库，需要已登录的 `gh`（或 PAT）：
 
