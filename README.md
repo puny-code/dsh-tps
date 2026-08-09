@@ -24,14 +24,16 @@ English: [README.en.md](README.en.md)
    grep -n "conversation.chat.turnStatus" <harness>/packages/client/ui-conversation/src/client/apply.ts
    ```
 
-   有输出即满足；没有则说明你的 harness 快照早于槽位合入，先应用本仓库附带的补丁（只改 ui-conversation 四个文件：slots.ts / apply.ts / ChatView.tsx / ChatView.module.css，`git checkout` 可还原）：
+   **grep 有输出**：槽位已存在（例如已应用过本补丁、或 checkout 来自作者修改过的版本），可直接进入安装。
+
+   **grep 无输出是默认状态**：该槽位是作者对 ui-conversation 的**手动补丁改动**（4 个文件：slots.ts / apply.ts / ChatView.tsx / ChatView.module.css），**从未合入任何共享/原始快照**——所有内测人员的原始快照都不含它。请应用本仓库附带的补丁（`git checkout` 可还原）：
 
    ```sh
    cd <harness>
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   说明：槽位改动虽已提交到作者的个人快照仓库（`dsh2026/test-Small-tailqwq`），但内测组的每日快照是**独立的更新流程**——个人仓库的推送不会自动进入其他成员的快照。因此目前**所有内测人员都应按本步骤打补丁**（或使用下方 AI 安装技能自动完成）；待槽位合入共享的快照更新流程后，方可免去此步骤。
+   说明：槽位改动只存在于作者修改过的 checkout 中（个人快照仓库 `dsh2026/test-Small-tailqwq` 的推送也不会自动进入其他成员的快照，每日快照是独立更新流程）。因此目前**所有内测人员的原始快照都需按本步骤打补丁**（或使用下方 AI 安装技能自动完成）；待槽位合入共享的快照更新流程后，方可免去此步骤。
 
 2. **私有仓库访问**：本仓库为 dsh-external 内测私有仓库，需要已登录的 `gh`（或 PAT）：
 

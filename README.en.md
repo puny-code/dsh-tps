@@ -24,14 +24,16 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
    grep -n "conversation.chat.turnStatus" <harness>/packages/client/ui-conversation/src/client/apply.ts
    ```
 
-   Output means the slot exists; nothing means your snapshot predates it — apply the patch shipped with this repo first (four ui-conversation files only: slots.ts / apply.ts / ChatView.tsx / ChatView.module.css; reversible with `git checkout`):
+   **Output means the slot is present** (e.g. the patch was applied before, or the checkout comes from the author's modified tree) — proceed to installation.
+
+   **No output is the default state**: the slot is a **manual ui-conversation patch** by the author (four files: slots.ts / apply.ts / ChatView.tsx / ChatView.module.css) and has **never been part of any shared/original snapshot** — every internal tester's pristine snapshot lacks it. Apply the patch shipped with this repo (reversible with `git checkout`):
 
    ```sh
    cd <harness>
    git apply <dsh-tps>/patches/turnstatus-slot.patch
    ```
 
-   Note: the slot change is committed to the author's *personal* snapshot repo (`dsh2026/test-Small-tailqwq`), but the group's daily snapshots are updated by a **separate process** — pushes to a personal repo do not automatically reach other members' snapshots. So for now **every internal tester applies this patch** (or lets the AI install skill below do it); the step becomes optional only once the slot lands in the shared snapshot-update flow.
+   Note: the slot change exists only in the author's modified checkout (pushes to the personal snapshot repo `dsh2026/test-Small-tailqwq` do not automatically reach other members' snapshots either — daily snapshots are a separate update flow). So for now **every internal tester's pristine snapshot needs this patch** (or let the AI install skill below do it); the step becomes optional only once the slot lands in the shared snapshot-update flow.
 
 2. **Private repo access**: this is a private dsh-external repository; use an authenticated `gh` (or a PAT):
 
