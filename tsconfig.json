@@ -1,26 +1,28 @@
 {
+  "extends": "../deepseek-harness/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2024",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": [
-      "ES2024",
-      "DOM"
-    ],
-    "jsx": "react-jsx",
-    "strict": true,
-    "noImplicitAny": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "allowImportingTsExtensions": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
     "rootDir": "src",
     "outDir": "lib/types",
-    "skipLibCheck": true
+    "jsx": "react-jsx"
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../deepseek-harness/vendor/cordis"
+    },
+    {
+      "path": "../deepseek-harness/packages/client/runtime"
+    },
+    {
+      "path": "../deepseek-harness/packages/client/ui-conversation"
+    },
+    {
+      "path": "../deepseek-harness/packages/client/locale"
+    },
+    {
+      "path": "../deepseek-harness/packages/client/ui-slots"
+    }
   ]
 }

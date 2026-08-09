@@ -109,20 +109,23 @@ dsh --profile web --dump-config | grep -A1 tps
 
 ### 布局与依赖（开发本仓库时）
 
-插件通过 `link:` 开发依赖引用 harness checkout，默认约定两者平级：
+与 harness checkout 平级（sibling）是约定布局——`tsconfig.json` extends `../deepseek-harness/tsconfig.base.json`，类型解析（`tsc -b`、vitest 经 `vite-tsconfig-paths`）都经由它的 `paths` 直接指向 harness 源码，无需复制任何构建产物：
 
 ```
 deepseek-harness/   ← harness 源码 checkout（含 turnStatus 槽位）
 dsh-tps/            ← 本仓库
 ```
 
-若你的 checkout 布局不同，把 `package.json` 里所有 `link:../../deepseek-harness/...` 改为相对你布局的路径，然后 `cd dsh-tps && pnpm install`。
+类型检查、构建与测试都需要该 sibling checkout；**消费者安装不需要**——`prepare` 脚本用 `tsdown --config tsdown.prepare.config.ts` 做无类型检查的 src→lib 转译（`tsconfig.prepare.json` 自包含），没有 sibling 的机器也能安装构建（pnpm ≥ 10 需 `pnpm-workspace.yaml` 的 `allowBuilds` 键）。
 
 ### 构建与生效
 
 ```sh
 cd dsh-tps
-pnpm run build          # tsc + tsdown：产出 lib/index.js 与 lib/client.js
+pnpm run typecheck    # tsc -b（需 sibling harness）
+pnpm test             # vitest（27 例：形态门禁 + 指标 + 组件/生命周期）
+pnpm run build        # tsc -b + tsdown：产出 lib/index.js 与 lib/client.js
+pnpm run prepare      # 消费者构建：仅 tsdown，无类型检查（src → lib）
 ```
 
 - **开发模式**（`dsh web --dev` + `pnpm run dev:web` watcher）：构建后客户端插件自动热更新。

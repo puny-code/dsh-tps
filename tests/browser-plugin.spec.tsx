@@ -11,9 +11,9 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import type { ConversationSnapshot } from '../../deepseek-harness/packages/client/runtime/src/client'
-import type { SnapshotSelectorHook } from '../../deepseek-harness/packages/client/ui-slots/src'
-import { SlotCore } from '../../deepseek-harness/packages/client/ui-slots/src'
+import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import { SlotCore } from '@deepseek-ai/dsh-client-ui-slots'
 import { apply, inject } from '../src/client/index.ts'
 import { TpsOverlay, pointInRect } from '../src/client/TpsOverlay.tsx'
 import { zh } from '../src/client/locales.ts'

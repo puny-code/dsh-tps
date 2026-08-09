@@ -109,20 +109,23 @@ dsh --profile web --dump-config | grep -A1 tps
 
 ### Layout and dependencies (when developing this repo)
 
-The plugin references the harness checkout through `link:` devDependencies, defaulting to sibling layouts:
+The default layout is sibling checkouts — `tsconfig.json` extends `../deepseek-harness/tsconfig.base.json`, and type resolution (`tsc -b`, vitest via `vite-tsconfig-paths`) goes through that base's `paths` straight to the harness sources; nothing is copied:
 
 ```
 deepseek-harness/   ← harness source checkout (with the turnStatus slot)
 dsh-tps/            ← this repository
 ```
 
-If your checkouts use another layout, adjust every `link:../../deepseek-harness/...` entry in `package.json`, then `cd dsh-tps && pnpm install`.
+Typecheck, build, and tests need that sibling checkout; **consumer installs never do** — the `prepare` script runs `tsdown --config tsdown.prepare.config.ts`, a type-unchecked src→lib transpile (self-contained `tsconfig.prepare.json`), so a machine without the sibling can still install and build (pnpm ≥ 10 needs the `allowBuilds` key in `pnpm-workspace.yaml`).
 
 ### Build and activate
 
 ```sh
 cd dsh-tps
-pnpm run build          # tsc + tsdown: emits lib/index.js and lib/client.js
+pnpm run typecheck    # tsc -b (needs the sibling harness)
+pnpm test             # vitest (27 tests: shape gate + metrics + component/lifecycle)
+pnpm run build        # tsc -b + tsdown: emits lib/index.js and lib/client.js
+pnpm run prepare      # consumer build: tsdown only, no type checking (src → lib)
 ```
 
 - **Development mode** (`dsh web --dev` + `pnpm run dev:web` watcher): client-plugin bundles hot-reload after building.
