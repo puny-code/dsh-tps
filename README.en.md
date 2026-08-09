@@ -18,13 +18,20 @@ Live TPS badge for DSH Web: real-time tokens-per-second rendered inside the "Dee
 
 ### Prerequisites
 
-1. **A harness checkout containing the `conversation.chat.turnStatus` slot** (internal build). Verify:
+1. **A harness checkout containing the `conversation.chat.turnStatus` slot**. Verify:
 
    ```sh
    grep -n "conversation.chat.turnStatus" <harness>/packages/client/ui-conversation/src/client/apply.ts
    ```
 
-   Output means the slot exists; nothing means the harness is too old — land the ui-conversation change that declares the slot first.
+   Output means the slot exists; nothing means it is not yet in your harness (the slot currently lives **only in the author's ui-conversation patch — not in any shared branch**), so apply the patch shipped with this repo first:
+
+   ```sh
+   cd <harness>
+   git apply <dsh-tps>/patches/turnstatus-slot.patch
+   ```
+
+   The patch touches four ui-conversation files only (slots.ts / apply.ts / ChatView.tsx / ChatView.module.css) and is reversible with `git checkout`.
 
 2. **Private repo access**: this is a private dsh-external repository; use an authenticated `gh` (or a PAT):
 
