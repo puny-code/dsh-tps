@@ -27,7 +27,7 @@ describe('dsh-tps plugin export shape', () => {
   })
 
   it('package.json declares the web client entry the host scans', () => {
-    const meta = pkg.dshClient as { platform: string; inject: string[] }
+    const meta = pkg.dsh.client as { platform: string; inject: string[] }
     expect(meta.platform).toBe('web')
     expect(meta.inject).toContain('@deepseek-ai/dsh-client-ui-conversation')
     // The bundle layer that activates this plugin ships the slot host.
