@@ -2,19 +2,21 @@
 // row ("Deep diving…"), sharing that row's visibility lifecycle — the row
 // exists only while a turn runs, so the badge disappears with it when the
 // turn ends or a takeover panel hides the composer flow. The live rate
-// rides a rolling window of estimated-token samples over the streaming
-// partial; settled averages are the built-in StatsLine's job, not this
-// plugin's. A hover dwell fades the badge out (click-through while hidden)
-// and a pause restores it; a restore while the cursor still rests on the
-// badge does not restart the dwell — the timer begins only after the cursor
-// leaves and re-enters.
+// rides a rolling window of token samples over the streaming partial
+// (counted by the shared DeepSeek tokenizer estimator; the oc-tps bytes/5
+// approximation covers the brief pre-load window); settled averages are the
+// built-in StatsLine's job, not this plugin's. A hover dwell fades the
+// badge out (click-through while hidden) and a pause restores it; a restore
+// while the cursor still rests on the badge does not restart the dwell —
+// the timer begins only after the cursor leaves and re-enters.
 
 import { memo, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 import type { PropsLocale, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import { sharedEstimator } from './tokenizer/estimator.ts'
 import {
-  estimatePartialTokens, formatRate, liveRate, pushSample, type TpsSample,
+  formatRate, liveRate, pushSample, type TpsSample,
 } from './tps-metrics.ts'
 import css from './TpsOverlay.module.css'
 
@@ -59,24 +61,37 @@ export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlay
 
   // Live-rate sampling: the effect runs per partial publication (the runtime
   // publishes the partial on every visible delta). Each delta appends an
-  // estimated-token sample; a step boundary restarts the window (the new
-  // step's observed content opens it, so a fresh stream shows a rate from
-  // its first chunk instead of a blank until the second delta).
+  // estimated-token sample (exact DeepSeek tokenizer counts once the merge
+  // table is loaded; the oc-tps bytes/5 approximation before that); a step
+  // boundary restarts the window (the new step's observed content opens it,
+  // so a fresh stream shows a rate from its first chunk instead of a blank
+  // until the second delta).
   const samplesRef = useRef<TpsSample[]>([])
   const stepKeyRef = useRef<string | null>(null)
   const lastTokensRef = useRef(0)
   const [live, setLive] = useState<number | null>(null)
+  // Re-evaluate once after the tokenizer table is ready so the first exact
+  // count lands without waiting for the next stream delta.
+  const [readyTick, setReadyTick] = useState(0)
+  useEffect(() => {
+    let alive = true
+    void sharedEstimator.ready.then(() => {
+      if (alive) setReadyTick(tick => tick + 1)
+    })
+    return () => { alive = false }
+  }, [])
 
   useEffect(() => {
     if (!running || partial === null) {
       samplesRef.current = []
       stepKeyRef.current = null
       lastTokensRef.current = 0
+      sharedEstimator.reset()
       setLive(null)
       return
     }
     const stepKey = `${partial.turn}:${partial.step}`
-    const total = estimatePartialTokens(partial.blocks)
+    const total = sharedEstimator.estimateBlocks(partial.blocks)
     if (stepKey !== stepKeyRef.current) {
       stepKeyRef.current = stepKey
       lastTokensRef.current = total
@@ -90,7 +105,7 @@ export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlay
       samplesRef.current = pushSample(samplesRef.current, { at: Date.now(), tokens: delta })
     }
     setLive(liveRate(samplesRef.current, Date.now()))
-  }, [running, partial])
+  }, [running, partial, readyTick])
 
   // While a turn runs, re-evaluate the live rate on a cadence so a paused
   // stream ages to null instead of freezing the last reading.

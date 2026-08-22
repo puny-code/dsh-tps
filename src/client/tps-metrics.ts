@@ -21,9 +21,11 @@ export interface TpsSample {
 }
 
 /**
- * Estimate the output tokens of one text/reasoning delta. The oc-tps
- * approximation (UTF-8 bytes / 5, floored at one token) needs no provider
- * call; provider-reported usage still wins for the settled window stats.
+ * Approximate the output tokens of one text/reasoning delta: the oc-tps
+ * bytes/5 estimate. This is the FALLBACK path only — TpsOverlay runs the
+ * exact DeepSeek tokenizer (see ./tokenizer/estimator.ts) once its merge
+ * table is loaded; these pure functions stay available for the brief
+ * initialization window and are covered by the metric unit tests.
  * @param text - the delta text.
  * @returns the token estimate.
  */
@@ -32,7 +34,8 @@ export function estimateDeltaTokens(text: string): number {
 }
 
 /**
- * Estimated tokens of a partial assistant projection: text and reasoning
+ * Estimated tokens of a partial assistant projection via the bytes/5
+ * approximation (fallback; see `estimateDeltaTokens`). Text and reasoning
  * blocks only — tool-call frames carry arguments, not visible output.
  * @param blocks - the partial's assistant blocks.
  * @returns the estimate.

@@ -9,12 +9,13 @@
  * re-enter required). Component-level rendering covers the direct props
  * contract. The node half is exercised over the same suite.
  */
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 import type { SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
 import { SlotCore } from '@deepseek-ai/dsh-client-ui-slots'
 import { apply, inject } from '../src/client/index.ts'
+import { sharedEstimator } from '../src/client/tokenizer/estimator.ts'
 import { TpsOverlay, pointInRect } from '../src/client/TpsOverlay.tsx'
 import { zh } from '../src/client/locales.ts'
 import css from '../src/client/TpsOverlay.module.css'
@@ -28,10 +29,18 @@ afterEach(() => {
 
 const sid = 's1' as ConversationSnapshot['sessionId']
 
+// The rc6 runtime/client entry is a browser bundle (window.__ModuleLoader__),
+// so tests cannot value-import its empty-snapshot exports; the badge only
+// reads running/partial, and these fields are never touched.
+const NO_VIEWS = {} as ConversationSnapshot['views']
+const NO_CHAT = {} as ConversationSnapshot['chat']
+
 /** A quiescent conversation snapshot (open window, no traffic). */
 function conversationSnapshot(): ConversationSnapshot {
   return {
     sessionId: sid,
+    views: NO_VIEWS,
+    chat: NO_CHAT,
     nodes: [],
     turnTimings: new Map(),
     turnEnds: new Map(),
@@ -129,6 +138,12 @@ describe('ui-tps plugin registration', () => {
 })
 
 describe('TpsOverlay component', () => {
+  // Exact tokenization is async (merge table load); the badge's expectations
+  // below are official DeepSeek tokenizer counts, so wait for readiness.
+  beforeAll(async () => {
+    await sharedEstimator.ready
+  })
+
   it('renders nothing until the first live value, then keeps the dash during mid-turn pauses', () => {
     let snapshot = conversationSnapshot()
     const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
@@ -174,23 +189,24 @@ describe('TpsOverlay component', () => {
     expect(view.container.textContent).toContain('TPS 3.00')
 
     // A new step restarts accumulation: the previous step's samples drop and
-    // the new step's observed content opens a fresh window.
+    // the new step's observed content opens a fresh window. 100 × 'x' is 13
+    // DeepSeek tokens (12 × 'xxxxxxxx' + 'xxxx').
     snapshot = {
       ...snapshot,
       partial: { turn: 1, step: 1, blocks: [{ kind: 'text', text: 'x'.repeat(100) }] },
     }
     view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
-    expect(view.container.textContent).toContain('TPS 20.0') // 100 bytes → 20 tokens
+    expect(view.container.textContent).toContain('TPS 13.0') // 13 tokens
 
-    // The next delta of the new step appends: 5 more bytes → 1 token.
+    // The next delta of the new step appends: 5 more x's → 1 token.
     snapshot = {
       ...snapshot,
       partial: { turn: 1, step: 1, blocks: [{ kind: 'text', text: 'x'.repeat(105) }] },
     }
     await act(async () => { vi.advanceTimersByTime(500) })
     view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
-    // 20 tokens at t≈0 + 1 at t=500 → 21 over the 1s floor.
-    expect(view.container.textContent).toContain('TPS 21.0')
+    // 13 tokens at t≈0 + 1 at t=500 → 14 over the 1s floor.
+    expect(view.container.textContent).toContain('TPS 14.0')
   })
 
   it('ages the live rate to a dash while the stream pauses', async () => {
