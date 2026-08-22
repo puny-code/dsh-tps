@@ -1,12 +1,7 @@
 {
-  "extends": "../deepseek-harness/tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "declarationMap": false,
-    "incremental": false,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "noEmit": true
   },
   "include": [
     "src",

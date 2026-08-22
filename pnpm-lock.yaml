@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@deepseek-ai/dsh-client-ui-conversation':
+    hash: 30bccb0499d878ecae4becfb49e420c0e262e6ea2777fd2952841bb7d7d64b81
+    path: patches/@deepseek-ai__dsh-client-ui-conversation.patch
+
 importers:
 
   .:
@@ -12,6 +17,24 @@ importers:
         specifier: ^2.0.0
         version: 2.1.1
     devDependencies:
+      '@cordisjs/plugin-loader':
+        specifier: ^1.0.0-rc.5
+        version: 1.0.0-rc.5(cordis@4.0.0-rc.8)
+      '@deepseek-ai/cordis':
+        specifier: 4.0.1
+        version: 4.0.1
+      '@deepseek-ai/dsh-client-locale':
+        specifier: 0.1.0-rc.6
+        version: 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-client-connection@0.1.0-rc.6(626859792036543810338a4dfd99b134))(@deepseek-ai/dsh-client-runtime@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31))(@deepseek-ai/dsh-client-ui-slots@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(react@18.3.1)
+      '@deepseek-ai/dsh-client-runtime':
+        specifier: 0.1.0-rc.6
+        version: 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31)
+      '@deepseek-ai/dsh-client-ui-conversation':
+        specifier: 0.1.0-rc.6
+        version: 0.1.0-rc.6(patch_hash=30bccb0499d878ecae4becfb49e420c0e262e6ea2777fd2952841bb7d7d64b81)(bf3a4d89eba0fcff7aa73fde2b2dc962)
+      '@deepseek-ai/dsh-client-ui-slots':
+        specifier: 0.1.0-rc.6
+        version: 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1
@@ -24,6 +47,9 @@ importers:
       '@types/react':
         specifier: ~18.3.1
         version: 18.3.31
+      cordis:
+        specifier: ^4.0.0-rc.7
+        version: 4.0.0-rc.8(@cordisjs/plugin-loader@1.0.0-rc.5)
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
@@ -69,6 +95,15 @@ packages:
     resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
+  '@cordisjs/plugin-loader@1.0.0-rc.5':
+    resolution: {integrity: sha512-084Wn2SzkFinbaASTq8blHOUqQt/oxZfX6gnrt0lnJ1CrystulFLL1+XVgF4o7lUMN9bHn4cfT1pMtkHprCtHw==}
+    peerDependencies:
+      cordis: ^4.0.0-rc.7
+      node-addon-require-builtin: ^0.1.0
+    peerDependenciesMeta:
+      node-addon-require-builtin:
+        optional: true
+
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
     engines: {node: '>=18'}
@@ -96,6 +131,380 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@deepseek-ai/cordis@4.0.1':
+    resolution: {integrity: sha512-YBdskTU2Po1kru3GgcUWUbkTsPMA9LkSQDAY8rBkFJeajdgcQad3QPJZE26JyK99Xb6HaASvoXg2DSUTeN/0Nw==}
+    hasBin: true
+    peerDependencies:
+      '@deepseek-ai/cordis-plugin-include': ^1.0.6
+      '@deepseek-ai/cordis-plugin-loader': ^1.0.2
+    peerDependenciesMeta:
+      '@deepseek-ai/cordis-plugin-include':
+        optional: true
+      '@deepseek-ai/cordis-plugin-loader':
+        optional: true
+
+  '@deepseek-ai/cosmokit@1.8.2':
+    resolution: {integrity: sha512-muBOKtSrUKU5m/xpq8ZXWL6hQ/jgd4PhU2PqH97bcxIiLEJfNwZOGQEx4t/aS/GgxRAR+ra9pMHPMtTHU4sqqA==}
+
+  '@deepseek-ai/dsh-agent-default-model@0.1.0-rc.6':
+    resolution: {integrity: sha512-5Fl15p5mHVMlp69Ea0qeS81ej1Bt9vSJtCed+gjvzkKzv5y3VbJQ8PPBV34F1rTSyhTtjj5Q7TuDugQI5ZpjfA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-settings': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-agent@0.1.0-rc.6':
+    resolution: {integrity: sha512-vtqq2pWTrzn0dKfj5kREZRpP82AwtGjGx9V1lYnKvF+Uc/a8zyWbSvjDE7V1d3YQAQJzs2cWO31hURWDekDXIA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-system-prompt': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-api-remotes@0.1.0-rc.6':
+    resolution: {integrity: sha512-yYsHgPr5ZiLk+i2RTREdMj8Gin7J8jG2qnTehZmLpCONGbJv2+grPPRuH7OwcQd+HguXL0ay/rlg6L1O1t8xDg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-agent-presets': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-api-gateway': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-commands': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-cordis-host-runner': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-credentials': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-goal': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-host-plugin-inventory': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-message-feedback': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-persistence': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-settings': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-registry': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-attachment@0.1.0-rc.6':
+    resolution: {integrity: sha512-3P6N17NQ8jqSQGzeCs+svCIqArU8oq0YmgEAo+axN9aVuUDferWU4DLRSX59UGpmyldX4LQn81toA+c+DqMcHg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-brand@0.1.0-rc.6':
+    resolution: {integrity: sha512-E8j9Nby24qP4rfrdcfc7bpt1CHpGT3tYmycOJJkEOH4ptIdT1m2ro9nmnSd5CWYukTr64A77vjm2WGqHRI92UA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-client-connection@0.1.0-rc.6':
+    resolution: {integrity: sha512-ZHqZXmmdcxzw7HKwrSJDlU3/GVulvX/yAc1xHu7hw+cXWws2QK7ahQMpfdiywnxAVYadhFnsvLLkEPp38mOREg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-host-webserver': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-client-locale@0.1.0-rc.6':
+    resolution: {integrity: sha512-IoSLGxfHgcoaNzIlQ7YRTHRTy/MQCvvusrPCwlT30Xc9lpQe6Yo/LiRLDXlm9zbhN6imf/AoQZIfO+T3VGqneg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-api-remotes': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-connection': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-primitives': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-settings': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-slots': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      react: ^18.2.0
+
+  '@deepseek-ai/dsh-client-runtime@0.1.0-rc.6':
+    resolution: {integrity: sha512-qprJMsVPLK2CyJmmCHwECJZlbM7XNG5yKr2Zf/yKYRyz0+QNJfHlIt+4C32tkjFFIq+Dx3gU5YaUQaLXxsR4/w==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-api-remotes': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-registry': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-client-ui-conversation@0.1.0-rc.6':
+    resolution: {integrity: sha512-pKDKZYTRvO9pBTyHvVOtPDuTzNfCHwy7GmeIaRLjyCORLPM3uv0BuMc1qIHVI6LcK54l+cRGIuSSGah3bO/0vw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-api-remotes': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-attachment': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-connection': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-locale': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-attachment': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-input-trigger': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-primitives': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-settings': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-ui-slots': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-commands': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-compaction': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm-retry': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-stats': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-token-meter': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
+      react: ^18.2.0
+
+  '@deepseek-ai/dsh-client-ui-slots@0.1.0-rc.6':
+    resolution: {integrity: sha512-F4VZA60bMRi4DAbZvNipM4E/Jl01QC0cQCPpeIEIh1/lq/y/bpc7IqujtzWESHPe3qSljTURip3hkANfsYs3UA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-commands@0.1.0-rc.6':
+    resolution: {integrity: sha512-dq1GZmGTPXEGG01ksZ6Jj6DxAkzAbg+nepvfnM/P74d6EUcsFsEy7CfS18n0VJ6/2Wp0xOWsQyyuFElqbynO7w==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-credentials@0.1.0-rc.6':
+    resolution: {integrity: sha512-zyYRs3A9gxfZjZfONzJdMhM0Gzbslpha+FGYkLDRAozgPj0N7mZdE+Qflx2V4WNrCnsSjuvOW0HFBxWtSRUTUw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-goal@0.1.0-rc.6':
+    resolution: {integrity: sha512-cONQOvFqZmjtw5HSgbXJ5/8rZ2gHqdf69ONhH21cLFu5jJKVy9YbLt42SlD2sdGMv/co9nN8Kt9bWQiZ/96VbQ==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-projection': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-host-apiproxy@0.1.0-rc.6':
+    resolution: {integrity: sha512-sydiTngUEtvCyUwtCpXusQXVuiq0Kv7t2Axe8UKbimhhQLktnfhAmsEF+QHFTG5zcnxAuuigPiUTeY0Cr8+CnA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent-presets': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-cordis-host-runner': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-host-directory-picker@0.1.0-rc.6':
+    resolution: {integrity: sha512-1XafIFC2H5sPi720ATQWgCTgjZum7ZUng6H+z9uDMOhkKLFO7X2n8D2ddmGuQINnKV7sjlw0Q1uBr/sFiY4Bqw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-jobs@0.1.0-rc.6':
+    resolution: {integrity: sha512-fmyvSOVsNObmRnciuH57ZntuCSb0gflRleCeQx1ToGHRoGrR4Ndnstx33SuIXUQt6OSUhD2w2WKQTReXogpnSQ==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-llm-retry@0.1.0-rc.6':
+    resolution: {integrity: sha512-HdjBWcQ6spwA8B5dScRhndLQNiKoQTkq36O+kmJ80B9V4z08K5XrJwAInH9cCxJ91CqNzx/sxCdDds0oZDH1Pw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-timeout': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-llm@0.1.0-rc.6':
+    resolution: {integrity: sha512-kuFGC8bHlzGTwlRxQhXjf3CYWl8M4NzH+EYIkrW8rri4iMc9W53xrdvkil5No/DUlMm8g1u7GdeiWYFy0TMvtA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-attachment': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-timeout': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-native-command@0.1.0-rc.6':
+    resolution: {integrity: sha512-b2AwcAlNmTDPho/dMQ5wOicEwkDG1FSNSCUvluFp9JBbM8AqUMI3rVuOGFPIT0BEOi+ehpW/if0BZ2S35FSEwA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-session-persistence@0.1.0-rc.6':
+    resolution: {integrity: sha512-AbNBe+IYCbZqSHqOACVdj8QTynm2HZ0cThrEuI6nGMtlWLYLx6lzZ1rgO/56Av9mIScjyTBGJAIKhEYaMTBG9g==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-timeout': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-session-projection-cache@0.1.0-rc.6':
+    resolution: {integrity: sha512-Fqyd5aN7MvIiRMWxs0Q4dWmSMKLqdWNk5U97EFdeWY3Ol5bk8SSFfFrij4941B5y4K2f7C0mE9nLSQ3mfL2KHg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-persistence': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-projection': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-storage-domain': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-session-projection@0.1.0-rc.6':
+    resolution: {integrity: sha512-DYLALBPdEI1LZjJ4B6rdGdGY4gy+iR2+5Xh2xJoAGa/pTyN5Z55TNfvuMJrmeRBjAuDXNUQpmURbvos5rJ4veg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-session-query@0.1.0-rc.6':
+    resolution: {integrity: sha512-bGzRrZnWuXDUtAmwkRxT74Nuc4PLQJmJ4IeGgSSTIGJ9JQCNbvVjr4ZWDWg+D/PvbZwh9mpYJspDZdUP42eWAA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-persistence': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-title': ^0.1.0-rc.6
+    peerDependenciesMeta:
+      '@deepseek-ai/dsh-session-persistence':
+        optional: true
+
+  '@deepseek-ai/dsh-session-title@0.1.0-rc.6':
+    resolution: {integrity: sha512-RHV1ujuomvQB63HPI/n25c2/2It5XQ7zNQKozSqYOPQw7AIr16PT9iFqC7sCQ4l2gAY5GI3FbI1cQgHzjHNOag==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-projection': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-session@0.1.0-rc.6':
+    resolution: {integrity: sha512-8tu8I6VWC7050GAUXWhcEWQw4pakALQc8TlhKr52m7Y4+kIKeNt3FBgP86PaGPBtpK0p5zUPRQNkFpzZbBdxyw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-settings@0.1.0-rc.6':
+    resolution: {integrity: sha512-5ZlH2FNRU0kkdcCoEJohvdb2fiNnxM+iZqN3icbR3WQbMm8RPRrXlZlps5YUaQKPRbNRHA2LkOXW998QRlhHcA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/schemastery': ^3.18.1
+
+  '@deepseek-ai/dsh-skill@0.1.0-rc.6':
+    resolution: {integrity: sha512-VyRlCOASIRuTflKwn4NvbdAXxSPnnLJ+RAQUI4GK5pOtPwI2DhJrbovqpyp5kNAkZMsqvIeHWu5PcCEJ+FpQ2w==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-subagent@0.1.0-rc.6':
+    resolution: {integrity: sha512-vROmBDAlaFAzzSlTBOlvg/7fO55zxhUztnLtB3lKmN5RevrNQBjTsbeIMDQ8ow5ZplxEOnLU+sikFoA5JaoH8A==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-agent-presets': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-jobs': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-sandbox': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-sandbox-policy': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-persistence': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-projection': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-projection-cache': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-user-approval': ^0.1.0-rc.6
+    peerDependenciesMeta:
+      '@deepseek-ai/dsh-agent-presets':
+        optional: true
+      '@deepseek-ai/dsh-jobs':
+        optional: true
+      '@deepseek-ai/dsh-sandbox':
+        optional: true
+      '@deepseek-ai/dsh-sandbox-policy':
+        optional: true
+      '@deepseek-ai/dsh-session-persistence':
+        optional: true
+      '@deepseek-ai/dsh-session-projection':
+        optional: true
+      '@deepseek-ai/dsh-session-projection-cache':
+        optional: true
+      '@deepseek-ai/dsh-user-approval':
+        optional: true
+
+  '@deepseek-ai/dsh-tools@0.1.0-rc.6':
+    resolution: {integrity: sha512-Tu08EPK3JyK0iNjH4FGzu/1uADynNSS6SmwOLdfytUN0YNqwNuKFSt2OJUg19famNlTgy992DcHfDu0T+gLXFg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-code-runtime': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-system-prompt': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-user-approval': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6':
+    resolution: {integrity: sha512-weWzN8r01YCkoDCAM7BsKw2YhRrD4zL8N2SAZu9hovYtXSq8xHXsP4Zh8RLYIlYcuotjyff/6hic+0TJPd14YA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-user-approval@0.1.0-rc.6':
+    resolution: {integrity: sha512-9rnkSDGOpu2XUeGwbPeTzVUTFWTND1PMPM5L/ZQPptV5yyZlQiNxM2rCC6OdL+ZVerwxEqrRhZIQn/KVtQfKag==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-scope': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-system-prompt': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-user-questions@0.1.0-rc.6':
+    resolution: {integrity: sha512-5vG4Ug+hVQuwU4KN7CFpF9qObBEYY/mPe1FHhToYO8Y2ICdHt3eX0Or9oEJFW68bZAMfuiAshZL8oUubr7obRg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-agent': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
+
+  '@deepseek-ai/dsh-workspace@0.1.0-rc.6':
+    resolution: {integrity: sha512-3R5mX5JTBD9jDpUdauqaswDlxxJzlrRtJ7aH4Ok5jPdlxw0LhC5aIsS5S5RCtFLI1xDzonnInEczjmqmdGQcDQ==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-brand': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-session-persistence': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-storage': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-storage-domain': ^0.1.0-rc.6
+
+  '@deepseek-ai/schemastery@3.18.1':
+    resolution: {integrity: sha512-Qn0FCSwCQnpnj6SB31I6i2sIKgKWnkbJM8O0EU91Gv2UsYVvtZTl6IA0sCwk2e2MZf5S8w5hpq9QkeVvK9qwxg==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -561,6 +970,21 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
+  cordis@4.0.0-rc.8:
+    resolution: {integrity: sha512-vXaYK6XZJlIFTnODp4Rd973Qnd/gm3cwFzWsMTaeu6cQQheA7N+aA0GqHRNl0cFIrxMXWU8dst1ZXHlUQvfyRw==}
+    hasBin: true
+    peerDependencies:
+      '@cordisjs/plugin-include': ^1.0.4
+      '@cordisjs/plugin-loader': ^1.0.0-rc.5
+    peerDependenciesMeta:
+      '@cordisjs/plugin-include':
+        optional: true
+      '@cordisjs/plugin-loader':
+        optional: true
+
+  cosmokit@1.8.1:
+    resolution: {integrity: sha512-PDBv4l90xZKrUsZ0vtoycgZpO/j4iFsqJXrAxsyBDsnQRI7ZMJXIjgDJsKNjd5L8jnVnnlrDCdhkFbTncgCVjQ==}
+
   cssstyle@4.6.0:
     resolution: {integrity: sha512-2z+rWdzbbSZv6/rhtvzvqeZQHrBaqgogqt85sqFNbabZOuFbCVFb8kPeEtZjiKkbrm395irpNKiYeFeLiQnFPg==}
     engines: {node: '>=18'}
@@ -634,6 +1058,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -664,6 +1091,9 @@ packages:
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
+
+  immer@10.2.0:
+    resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
 
   import-without-cache@0.4.0:
     resolution: {integrity: sha512-NkJQA7oZ4YHQhd2+H3BoRFKF3d/XNsiKpHZCQEMH9pDX27hQQLsTyOocyRgaIVtf8gHX3Nt3LPkR4e5EdtPAGQ==}
@@ -981,6 +1411,11 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  use-sync-external-store@1.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
   verkit@0.3.2:
     resolution: {integrity: sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==}
     engines: {node: '>=18.12.0'}
@@ -1128,6 +1563,24 @@ packages:
   yuku-parser@0.8.4:
     resolution: {integrity: sha512-sw41wouvT5rUmLIp87hmvm5vtF+MRSI3x6yjq6xqpYmtkQj+Ht6N7xRQ8lMhLv8N7JAzughGj0Rfi0jQRSu9HQ==}
 
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
+  zustand@4.4.7:
+    resolution: {integrity: sha512-QFJWJMdlETcI69paJwhSMJz7PPWjVP8Sjhclxmxmxv/RYI7ZOvR5BHX+ktH0we9gTWQMxcne8q1OY8xxz604gw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+
 snapshots:
 
   '@asamuzakjp/css-color@3.2.0':
@@ -1148,6 +1601,11 @@ snapshots:
 
   '@babel/runtime@7.29.7': {}
 
+  '@cordisjs/plugin-loader@1.0.0-rc.5(cordis@4.0.0-rc.8)':
+    dependencies:
+      cordis: 4.0.0-rc.8(@cordisjs/plugin-loader@1.0.0-rc.5)
+      cosmokit: 1.8.1
+
   '@csstools/color-helpers@5.1.0': {}
 
   '@csstools/css-calc@2.1.4(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)':
@@ -1167,6 +1625,380 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.4
 
   '@csstools/css-tokenizer@3.0.4': {}
+
+  '@deepseek-ai/cordis@4.0.1':
+    dependencies:
+      '@deepseek-ai/cosmokit': 1.8.2
+      '@standard-schema/spec': 1.1.0
+
+  '@deepseek-ai/cosmokit@1.8.2': {}
+
+  '@deepseek-ai/dsh-agent-default-model@0.1.0-rc.6(ba8ddf6b99c0e0de20d44ffa555b1f7e)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-agent@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+
+  '@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-commands': 0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)
+      '@deepseek-ai/dsh-credentials': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-goal': 0.1.0-rc.6(4095bfd81876ff994185de10f7ab1860)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+
+  '@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+
+  '@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+
+  '@deepseek-ai/dsh-client-connection@0.1.0-rc.6(626859792036543810338a4dfd99b134)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-attachment': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-commands': 0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)
+      '@deepseek-ai/dsh-host-apiproxy': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-tools': 0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)
+      '@deepseek-ai/schemastery': 3.18.1
+      ws: 8.21.3
+    transitivePeerDependencies:
+      - '@deepseek-ai/dsh-agent'
+      - '@deepseek-ai/dsh-agent-presets'
+      - '@deepseek-ai/dsh-api-gateway'
+      - '@deepseek-ai/dsh-brand'
+      - '@deepseek-ai/dsh-code-runtime'
+      - '@deepseek-ai/dsh-cordis-host-runner'
+      - '@deepseek-ai/dsh-host-plugin-inventory'
+      - '@deepseek-ai/dsh-message-feedback'
+      - '@deepseek-ai/dsh-sandbox'
+      - '@deepseek-ai/dsh-sandbox-policy'
+      - '@deepseek-ai/dsh-scope'
+      - '@deepseek-ai/dsh-storage'
+      - '@deepseek-ai/dsh-storage-domain'
+      - '@deepseek-ai/dsh-system-prompt'
+      - '@deepseek-ai/dsh-timeout'
+      - '@deepseek-ai/dsh-typert-protocol'
+      - '@deepseek-ai/dsh-typert-registry'
+      - '@deepseek-ai/dsh-user-approval'
+      - bufferutil
+      - utf-8-validate
+
+  '@deepseek-ai/dsh-client-locale@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-client-connection@0.1.0-rc.6(626859792036543810338a4dfd99b134))(@deepseek-ai/dsh-client-runtime@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31))(@deepseek-ai/dsh-client-ui-slots@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(react@18.3.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-api-remotes': 0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50)
+      '@deepseek-ai/dsh-client-connection': 0.1.0-rc.6(626859792036543810338a4dfd99b134)
+      '@deepseek-ai/dsh-client-runtime': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31)
+      '@deepseek-ai/dsh-client-ui-slots': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
+      '@deepseek-ai/schemastery': 3.18.1
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@deepseek-ai/dsh-brand'
+
+  '@deepseek-ai/dsh-client-runtime@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-api-remotes': 0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50)
+      '@deepseek-ai/dsh-attachment': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-client-connection': 0.1.0-rc.6(626859792036543810338a4dfd99b134)
+      '@deepseek-ai/dsh-client-ui-slots': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-commands': 0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)
+      '@deepseek-ai/dsh-host-apiproxy': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm-retry': 0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-title': 0.1.0-rc.6(c253559331b5b16d3c172910669f9c02)
+      '@deepseek-ai/dsh-tools': 0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      immer: 10.2.0
+      react: 18.3.1
+      zustand: 4.4.7(@types/react@18.3.31)(immer@10.2.0)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@deepseek-ai/dsh-agent-presets'
+      - '@deepseek-ai/dsh-api-gateway'
+      - '@deepseek-ai/dsh-brand'
+      - '@deepseek-ai/dsh-code-runtime'
+      - '@deepseek-ai/dsh-cordis-host-runner'
+      - '@deepseek-ai/dsh-host-plugin-inventory'
+      - '@deepseek-ai/dsh-host-webserver'
+      - '@deepseek-ai/dsh-message-feedback'
+      - '@deepseek-ai/dsh-sandbox'
+      - '@deepseek-ai/dsh-sandbox-policy'
+      - '@deepseek-ai/dsh-scope'
+      - '@deepseek-ai/dsh-storage'
+      - '@deepseek-ai/dsh-storage-domain'
+      - '@deepseek-ai/dsh-system-prompt'
+      - '@deepseek-ai/dsh-timeout'
+      - '@deepseek-ai/dsh-user-approval'
+      - '@types/react'
+      - bufferutil
+      - utf-8-validate
+
+  '@deepseek-ai/dsh-client-ui-conversation@0.1.0-rc.6(patch_hash=30bccb0499d878ecae4becfb49e420c0e262e6ea2777fd2952841bb7d7d64b81)(bf3a4d89eba0fcff7aa73fde2b2dc962)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-api-remotes': 0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50)
+      '@deepseek-ai/dsh-attachment': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-client-connection': 0.1.0-rc.6(626859792036543810338a4dfd99b134)
+      '@deepseek-ai/dsh-client-locale': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-client-connection@0.1.0-rc.6(626859792036543810338a4dfd99b134))(@deepseek-ai/dsh-client-runtime@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31))(@deepseek-ai/dsh-client-ui-slots@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(react@18.3.1)
+      '@deepseek-ai/dsh-client-runtime': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-api-remotes@0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b))(@types/react@18.3.31)
+      '@deepseek-ai/dsh-client-ui-slots': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-commands': 0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)
+      '@deepseek-ai/dsh-llm-retry': 0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
+      '@deepseek-ai/dsh-tools': 0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)
+      '@deepseek-ai/schemastery': 3.18.1
+      clsx: 2.1.1
+      react: 18.3.1
+
+  '@deepseek-ai/dsh-client-ui-slots@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+
+  '@deepseek-ai/dsh-commands@0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      zod: 4.4.3
+
+  '@deepseek-ai/dsh-credentials@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+
+  '@deepseek-ai/dsh-goal@0.1.0-rc.6(4095bfd81876ff994185de10f7ab1860)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/schemastery': 3.18.1
+      zod: 4.4.3
+
+  '@deepseek-ai/dsh-host-apiproxy@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-agent-default-model': 0.1.0-rc.6(ba8ddf6b99c0e0de20d44ffa555b1f7e)
+      '@deepseek-ai/dsh-api-remotes': 0.1.0-rc.6(f2dc5e8f97b6d9ac60a4725cd4e5ba50)
+      '@deepseek-ai/dsh-attachment': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-commands': 0.1.0-rc.6(f74ef0ef0ac793ce116cd6869d12a988)
+      '@deepseek-ai/dsh-credentials': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-goal': 0.1.0-rc.6(4095bfd81876ff994185de10f7ab1860)
+      '@deepseek-ai/dsh-host-directory-picker': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-jobs': 0.1.0-rc.6(3cd1630e23906d38c4f34bb619f9d410)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-native-command': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-projection-cache': 0.1.0-rc.6(506e378e9472c307a31c5285971ba447)
+      '@deepseek-ai/dsh-session-query': 0.1.0-rc.6(bcd890ffa25d6fe109a3ec37cf054766)
+      '@deepseek-ai/dsh-session-title': 0.1.0-rc.6(c253559331b5b16d3c172910669f9c02)
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
+      '@deepseek-ai/dsh-skill': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-subagent': 0.1.0-rc.6(271a613b54201bc0be735cc74da95569)
+      '@deepseek-ai/dsh-tools': 0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)
+      '@deepseek-ai/dsh-user-approval': 0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)
+      '@deepseek-ai/dsh-user-questions': 0.1.0-rc.6(5df42ea67ee9be65e405c2329723028c)
+      '@deepseek-ai/dsh-workspace': 0.1.0-rc.6(88da65bb8f7aafd9c77cdde790fef1e5)
+      '@deepseek-ai/schemastery': 3.18.1
+      fflate: 0.8.3
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@deepseek-ai/dsh-api-gateway'
+      - '@deepseek-ai/dsh-code-runtime'
+      - '@deepseek-ai/dsh-host-plugin-inventory'
+      - '@deepseek-ai/dsh-message-feedback'
+      - '@deepseek-ai/dsh-sandbox'
+      - '@deepseek-ai/dsh-sandbox-policy'
+      - '@deepseek-ai/dsh-scope'
+      - '@deepseek-ai/dsh-storage'
+      - '@deepseek-ai/dsh-storage-domain'
+      - '@deepseek-ai/dsh-system-prompt'
+      - '@deepseek-ai/dsh-timeout'
+      - '@deepseek-ai/dsh-typert-protocol'
+      - '@deepseek-ai/dsh-typert-registry'
+
+  '@deepseek-ai/dsh-host-directory-picker@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+
+  '@deepseek-ai/dsh-jobs@0.1.0-rc.6(3cd1630e23906d38c4f34bb619f9d410)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+
+  '@deepseek-ai/dsh-llm-retry@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-attachment': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-native-command@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+
+  '@deepseek-ai/dsh-session-persistence@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+
+  '@deepseek-ai/dsh-session-projection-cache@0.1.0-rc.6(506e378e9472c307a31c5285971ba447)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/schemastery': 3.18.1
+      zod: 4.4.3
+
+  '@deepseek-ai/dsh-session-projection@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      zod: 4.4.3
+
+  '@deepseek-ai/dsh-session-query@0.1.0-rc.6(bcd890ffa25d6fe109a3ec37cf054766)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-title': 0.1.0-rc.6(c253559331b5b16d3c172910669f9c02)
+    optionalDependencies:
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+
+  '@deepseek-ai/dsh-session-title@0.1.0-rc.6(c253559331b5b16d3c172910669f9c02)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/schemastery': 3.18.1
+      zod: 4.4.3
+
+  '@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-typert-protocol': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+
+  '@deepseek-ai/dsh-settings@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-skill@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-subagent@0.1.0-rc.6(271a613b54201bc0be735cc74da95569)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-tools': 0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)
+      zod: 4.4.3
+    optionalDependencies:
+      '@deepseek-ai/dsh-jobs': 0.1.0-rc.6(3cd1630e23906d38c4f34bb619f9d410)
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-projection': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      '@deepseek-ai/dsh-session-projection-cache': 0.1.0-rc.6(506e378e9472c307a31c5285971ba447)
+      '@deepseek-ai/dsh-user-approval': 0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)
+
+  '@deepseek-ai/dsh-tools@0.1.0-rc.6(e5925aab28e94be72cae7632b19e0bc7)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-user-approval': 0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+
+  '@deepseek-ai/dsh-user-approval@0.1.0-rc.6(4f10acf3d658babcfceb8599a52cc63b)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/schemastery': 3.18.1
+
+  '@deepseek-ai/dsh-user-questions@0.1.0-rc.6(5df42ea67ee9be65e405c2329723028c)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-agent': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-llm': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+
+  '@deepseek-ai/dsh-workspace@0.1.0-rc.6(88da65bb8f7aafd9c77cdde790fef1e5)':
+    dependencies:
+      '@deepseek-ai/cordis': 4.0.1
+      '@deepseek-ai/dsh-brand': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)
+      '@deepseek-ai/dsh-session': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))
+      '@deepseek-ai/dsh-session-persistence': 0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-session@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/dsh-llm@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-brand@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-typert-protocol@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))
+      zod: 4.4.3
+
+  '@deepseek-ai/schemastery@3.18.1':
+    dependencies:
+      '@deepseek-ai/cosmokit': 1.8.2
+      '@standard-schema/spec': 1.1.0
 
   '@emnapi/core@1.10.0':
     dependencies:
@@ -1480,6 +2312,15 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
+  cordis@4.0.0-rc.8(@cordisjs/plugin-loader@1.0.0-rc.5):
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      cosmokit: 1.8.1
+    optionalDependencies:
+      '@cordisjs/plugin-loader': 1.0.0-rc.5(cordis@4.0.0-rc.8)
+
+  cosmokit@1.8.1: {}
+
   cssstyle@4.6.0:
     dependencies:
       '@asamuzakjp/css-color': 3.2.0
@@ -1524,6 +2365,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.5
 
+  fflate@0.8.3: {}
+
   fsevents@2.3.3:
     optional: true
 
@@ -1556,6 +2399,8 @@ snapshots:
   iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
+
+  immer@10.2.0: {}
 
   import-without-cache@0.4.0: {}
 
@@ -1844,6 +2689,10 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  use-sync-external-store@1.2.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   verkit@0.3.2: {}
 
   vite-tsconfig-paths@6.1.1(typescript@6.0.3)(vite@8.0.16(@types/node@22.20.1)):
@@ -1961,3 +2810,13 @@ snapshots:
       '@yuku-parser/binding-linux-x64-musl': 0.8.4
       '@yuku-parser/binding-win32-arm64': 0.8.4
       '@yuku-parser/binding-win32-x64': 0.8.4
+
+  zod@4.4.3: {}
+
+  zustand@4.4.7(@types/react@18.3.31)(immer@10.2.0)(react@18.3.1):
+    dependencies:
+      use-sync-external-store: 1.2.0(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.31
+      immer: 10.2.0
+      react: 18.3.1

@@ -29,7 +29,7 @@ export default defineConfig([
     clean: false,
     dts: false,
     sourcemap: true,
-    deps: { neverBundle: CLIENT_EXTERNALS },
+    deps: { alwaysBundle: ['clsx'], neverBundle: CLIENT_EXTERNALS },
     plugins: [cssModulesPlugin(CLIENT_ID)],
     tsconfig: 'tsconfig.prepare.json',
     outputOptions: {

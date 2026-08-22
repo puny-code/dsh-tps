@@ -4,7 +4,7 @@
  */
 
 /** Loader module-table id handed to `window.__ModuleLoader__.load`. */
-export const CLIENT_ID = '@dsh-external/tps'
+export const CLIENT_ID = 'dsh-tps'
 
 /** Browser-safe externals resolved from the loader module table. */
 export const CLIENT_EXTERNALS = [

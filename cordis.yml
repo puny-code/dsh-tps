@@ -3,4 +3,4 @@
 # into your profile's cordis.patch.yml.
 - insert:
     - id: tps
-      name: '@dsh-external/tps'
+      name: 'dsh-tps'

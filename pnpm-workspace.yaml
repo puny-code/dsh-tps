@@ -1,10 +1,12 @@
 packages:
   - .
 
-autoInstallPeers: false
-
 # pnpm >= 10 blocks `prepare` build scripts until the producing toolchain is
 # allowed. tsdown pulls esbuild (via vite) — consumers installing from git
 # must have this key or the first `dsh plugin add` prints it and fails.
 allowBuilds:
   esbuild: true
+
+autoInstallPeers: false
+patchedDependencies:
+  '@deepseek-ai/dsh-client-ui-conversation': patches/@deepseek-ai__dsh-client-ui-conversation.patch
