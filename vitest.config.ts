@@ -2,13 +2,15 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 /**
- * Vitest resolution: the project tsconfig resolves the @deepseek-ai/dsh-*
- * peer packages from node_modules (rc6 range); no sibling harness checkout
- * is involved anymore.
+ * Vitest resolution facade: the local test project and the sibling rc.1
+ * harness base jointly resolve repo-local @deepseek-ai packages from source.
  */
 export default defineConfig({
   plugins: [tsconfigPaths({
-    projects: ['./tsconfig.vitest.json'],
+    projects: [
+      './tsconfig.vitest.json',
+      '../deepseek-harness/tsconfig.base.json',
+    ],
   })],
   test: {
     include: ['tests/**/*.spec.ts', 'tests/**/*.spec.tsx'],

@@ -1,6 +1,4 @@
-# dsh-tps Web overlay: mounts the TPS badge as a Web client plugin row.
-# Apply this file with `dsh web --patch ./cordis.yml` or merge the insert
-# into your profile's cordis.patch.yml.
+# Plugin bundle loaded automatically by `dsh plugin --profile web add`.
 - insert:
     - id: tps
       name: 'dsh-tps'

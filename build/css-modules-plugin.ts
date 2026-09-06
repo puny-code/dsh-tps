@@ -7,7 +7,7 @@
  * @module
  */
 import { readFile } from 'node:fs/promises'
-import { basename, dirname, resolve as resolvePath, sep } from 'node:path'
+import { basename, dirname, relative, resolve as resolvePath, sep } from 'node:path'
 import { transform } from 'lightningcss'
 import type { TsdownPlugin } from 'tsdown'
 
@@ -20,6 +20,7 @@ const CSS_VIRTUAL_SUFFIX = '.mjs'
  * @returns the tsdown plugin.
  */
 export function cssModulesPlugin(clientId: string): TsdownPlugin {
+  const sourceFiles = new Map<string, string>()
   return {
     name: 'dsh-css-modules-inline',
     resolveId(source: string, importer: string | undefined) {
@@ -29,15 +30,21 @@ export function cssModulesPlugin(clientId: string): TsdownPlugin {
       // import verbatim; the stylesheet itself stays in src, so rebase the
       // emitted path onto the source tree (a no-op for src-based entries).
       abs = abs.split(`${sep}lib${sep}types${sep}`).join(`${sep}src${sep}`)
-      return CSS_VIRTUAL_PREFIX + abs + CSS_VIRTUAL_SUFFIX
+      // Keep both the virtual module id and lightningcss hash seed independent
+      // of the checkout path so build and consumer prepare emit identical CSS.
+      const sourceId = relative(process.cwd(), abs).split(sep).join('/')
+      const virtualId = CSS_VIRTUAL_PREFIX + sourceId + CSS_VIRTUAL_SUFFIX
+      sourceFiles.set(virtualId, abs)
+      return virtualId
     },
     async load(virtualId: string) {
-      if (!virtualId.startsWith(CSS_VIRTUAL_PREFIX)) return null
-      const fileId = virtualId.slice(CSS_VIRTUAL_PREFIX.length, -CSS_VIRTUAL_SUFFIX.length)
+      const fileId = sourceFiles.get(virtualId)
+      if (fileId === undefined) return null
+      const sourceId = virtualId.slice(CSS_VIRTUAL_PREFIX.length, -CSS_VIRTUAL_SUFFIX.length)
       this.addWatchFile(fileId)
       const source = await readFile(fileId)
       const { code, exports: cssExports } = transform({
-        filename: fileId,
+        filename: sourceId,
         code: source,
         cssModules: { pattern: '[hash]_[local]' },
         minify: true,

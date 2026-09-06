@@ -12,8 +12,9 @@
 
 import { memo, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
-import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
-import type { PropsLocale, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import type { UseChat } from '@deepseek-ai/dsh-client-ui-chat/client'
+import type { UseSession } from '@deepseek-ai/dsh-client-ui-session/client'
+import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import { sharedEstimator } from './tokenizer/estimator.ts'
 import {
   formatRate, liveRate, pushSample, type TpsSample,
@@ -34,9 +35,10 @@ const LIVE_TICK_MS = 1_000
 /** Badge visibility lifecycle: shown → fading (hover dwell) → hidden (click-through) → shown (restore). */
 export type BadgePhase = 'shown' | 'fading' | 'hidden'
 
-/** Props: the conversation-snapshot selector plus the locale seat. */
+/** Props: rc.1 Session/Chat selectors plus the locale seat. */
 export interface TpsOverlayProps {
-  useSession: SnapshotSelectorHook<ConversationSnapshot>
+  useSession: UseSession
+  useChat: UseChat
   /** The badge's locale seat (the plugin's `tps` namespace). */
   t: PropsLocale<'tps'>['t']
 }
@@ -55,9 +57,9 @@ export function pointInRect(point: Point, rect: Rect): boolean {
   return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom
 }
 
-export const TpsOverlay = memo(function TpsOverlay({ useSession, t }: TpsOverlayProps) {
+export const TpsOverlay = memo(function TpsOverlay({ useSession, useChat, t }: TpsOverlayProps) {
   const running = useSession(s => s.running)
-  const partial = useSession(s => s.partial)
+  const partial = useChat(s => s.legacy.partial)
 
   // Live-rate sampling: the effect runs per partial publication (the runtime
   // publishes the partial on every visible delta). Each delta appends an

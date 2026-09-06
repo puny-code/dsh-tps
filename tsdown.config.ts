@@ -1,6 +1,6 @@
 /**
- * Standalone build config: `tsc -p tsconfig.build.json` has already emitted
- * `lib/types` (declarations only); tsdown bundles the node half
+ * Development build config: `tsc -b` has already emitted `lib/types` through
+ * the sibling rc.1 harness project graph; tsdown bundles the node half
  * (`lib/index.js`) and the browser client bundle (`lib/client.js`) straight
  * from src, with CSS Modules compiled by lightningcss and inlined as a
  * `<style data-plugin>` tag — the same artifact contract as the in-repo

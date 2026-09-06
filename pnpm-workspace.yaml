@@ -8,5 +8,3 @@ allowBuilds:
   esbuild: true
 
 autoInstallPeers: false
-patchedDependencies:
-  '@deepseek-ai/dsh-client-ui-conversation': patches/@deepseek-ai__dsh-client-ui-conversation.patch

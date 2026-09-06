@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import Loader from '@cordisjs/plugin-loader'
+import { Loader } from '@deepseek-ai/cordis-plugin-loader'
 import * as tps from '../src/index.ts'
 import * as client from '../src/client/index.ts'
 import pkg from '../package.json'
@@ -32,6 +32,7 @@ describe('dsh-tps plugin export shape', () => {
     const meta = pkg.dsh.client as { platform: string; inject: string[] }
     expect(meta.platform).toBe('web')
     expect(meta.inject).toContain('@deepseek-ai/dsh-client-ui-conversation')
+    expect(meta.inject).toContain('@deepseek-ai/dsh-client-ui-renderer')
     // The bundle layer that activates this plugin ships the slot host.
     expect((pkg.dsh as { bundle: { patch: string } }).bundle.patch).toBe('./cordis.yml')
   })
@@ -47,12 +48,12 @@ describe('dsh-tps plugin export shape', () => {
     const allowed = new Set([
       'react',
       'react/jsx-runtime',
-      'cordis',
-      '@deepseek-ai/dsh-client-runtime',
-      '@deepseek-ai/dsh-client-runtime/client',
-      '@deepseek-ai/dsh-client-locale',
-      '@deepseek-ai/dsh-client-ui-conversation',
+      'react-dom',
+      'react-dom/client',
+      '@deepseek-ai/cordis',
+      '@deepseek-ai/dsh-client-store',
       '@deepseek-ai/dsh-client-ui-slots',
+      '@deepseek-ai/dsh-client-ui-primitives',
     ])
     const bundle = readFileSync(bundlePath, 'utf8')
     const requires = new Set(

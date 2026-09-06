@@ -1,6 +1,6 @@
 // Pure live-TPS derivation for the running-turn status badge. The rate
 // rides a rolling window of estimated-token samples over the streaming
-// partial (the snapshot carries no live token counts); the settled
+// partial (the Chat snapshot carries no live token counts); the settled
 // window averages are already a built-in StatsLine feature, so this plugin
 // deliberately owns only the instantaneous rate. Nothing here touches
 // React, the wire, or the session log.

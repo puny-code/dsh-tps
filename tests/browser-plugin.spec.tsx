@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
- * dsh-tps standalone tests: the plugin registers the TpsOverlay entry at
- * conversation.chat.turnStatus (verified against the pure SlotCore registry —
+ * dsh-tps standalone tests: the plugin registers the TpsMount entry at
+ * conversation.composer.dock (verified against the pure SlotCore registry —
  * the standalone build avoids the harness SlotTestRuntime deep-import chain),
  * the hover-fade lifecycle fades the badge out after the dwell and restores
  * it after the pause (click-through while hidden), and a restore while the
@@ -11,9 +11,11 @@
  */
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionSnapshot } from '@deepseek-ai/dsh-api-session-controller/client'
+import type { ChatSnapshot, PartialAssistant } from '@deepseek-ai/dsh-client-ui-chat/client'
 import type { SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
 import { SlotCore } from '@deepseek-ai/dsh-client-ui-slots'
+import { TpsMount } from '../src/client/TpsMount.tsx'
 import { apply, inject } from '../src/client/index.ts'
 import { sharedEstimator } from '../src/client/tokenizer/estimator.ts'
 import { TpsOverlay, pointInRect } from '../src/client/TpsOverlay.tsx'
@@ -27,30 +29,36 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-const sid = 's1' as ConversationSnapshot['sessionId']
+const sid = 's1' as SessionSnapshot['sessionId']
+const EMPTY_LIST: readonly never[] = []
 
-// The rc6 runtime/client entry is a browser bundle (window.__ModuleLoader__),
-// so tests cannot value-import its empty-snapshot exports; the badge only
-// reads running/partial, and these fields are never touched.
-const NO_VIEWS = {} as ConversationSnapshot['views']
-const NO_CHAT = {} as ConversationSnapshot['chat']
+interface TpsSnapshot {
+  running: boolean
+  partial: PartialAssistant | null
+}
 
-/** A quiescent conversation snapshot (open window, no traffic). */
-function conversationSnapshot(): ConversationSnapshot {
+/** A quiescent rc.1 Session/Chat projection (open window, no traffic). */
+function conversationSnapshot(): TpsSnapshot {
+  return { running: false, partial: null }
+}
+
+/** A session that is mid-stream with one text partial. */
+function runningSnapshot(): TpsSnapshot {
   return {
+    ...conversationSnapshot(),
+    running: true,
+    partial: { turn: 1, step: 0, blocks: [{ kind: 'text', text: 'streaming text' }] },
+  }
+}
+
+/** Selector-faithful Session stub over the rc.1 lifecycle owner. */
+function useSessionOf(snapshot: () => TpsSnapshot): SnapshotSelectorHook<SessionSnapshot> {
+  return selector => selector({
     sessionId: sid,
-    views: NO_VIEWS,
-    chat: NO_CHAT,
-    nodes: [],
-    turnTimings: new Map(),
-    turnEnds: new Map(),
-    partial: null,
-    runningCalls: [],
-    pending: [],
     queue: [],
-    running: false,
+    pendingSubmissions: [],
+    running: snapshot().running,
     subagent: null,
-    composerPhase: 'active',
     removed: false,
     openState: 'open',
     openError: null,
@@ -59,21 +67,27 @@ function conversationSnapshot(): ConversationSnapshot {
     promptError: null,
     blank: false,
     lastAgentError: null,
-  }
+    promptAttempted: true,
+    awaitingFirstTurn: false,
+  })
 }
 
-/** A session that is mid-stream with one text partial. */
-function runningSnapshot(): ConversationSnapshot {
-  return {
-    ...conversationSnapshot(),
-    running: true,
-    partial: { turn: 1, step: 0, blocks: [{ kind: 'text', text: 'streaming text' }] },
-  }
-}
-
-/** Selector-faithful useSession stub: applies the selector to a live snapshot cell. */
-function useSessionOf(snapshot: () => ConversationSnapshot): SnapshotSelectorHook<ConversationSnapshot> {
-  return selector => selector(snapshot())
+/** Selector-faithful Chat stub over the rc.1 target-owned partial. */
+function useChatOf(snapshot: () => TpsSnapshot): SnapshotSelectorHook<ChatSnapshot> {
+  return selector => selector({
+    order: EMPTY_LIST,
+    nodes: { get: () => undefined, values: () => EMPTY_LIST },
+    locations: { getTurn: () => EMPTY_LIST, getStep: () => EMPTY_LIST },
+    navigation: { items: () => EMPTY_LIST },
+    timeline: { turnOrder: EMPTY_LIST, turns: new Map() },
+    legacy: {
+      nodes: EMPTY_LIST,
+      turnTimings: new Map(),
+      turnEnds: new Map(),
+      partial: snapshot().partial,
+      runningCalls: EMPTY_LIST,
+    },
+  })
 }
 
 /** Make the badge report a non-empty client rect (jsdom returns all-zero). */
@@ -105,18 +119,46 @@ describe('pointInRect', () => {
 })
 
 describe('ui-tps plugin registration', () => {
-  it('registers the turn-status entry once the slot is declared', () => {
+  it('registers the session dock entry once the slot is declared', async () => {
     const core = new SlotCore()
     // The built-in root declares the slot (declaring is claiming).
     core.register(
-      { name: 'root', children: { 'conversation.chat.turnStatus': { kind: 'single', scope: 'session' } } },
+      { name: 'root', children: { 'conversation.composer.dock': { kind: 'list', scope: 'session' } } },
       (() => null) as never,
     )
-    core.register({ name: 'conversation.chat.turnStatus', locale: 'tps' }, TpsOverlay)
-    const entries = core.entries('conversation.chat.turnStatus')
+    core.register({ name: 'conversation.composer.dock', id: 'tps', locale: 'tps' }, TpsMount)
+    const entries = core.entries('conversation.composer.dock')
     expect(entries).toHaveLength(1)
     expect(entries[0]?.locale).toBe('tps')
-    expect(entries[0]?.component).toBe(TpsOverlay)
+    expect(entries[0]?.component).toBe(TpsMount)
+
+    const snapshot = runningSnapshot()
+    const view = render(<div data-conversation-scroll="">
+      <div data-chat-flow="">
+        <article><div role="status" aria-live="polite">nested status</div></article>
+        <div role="status" aria-live="polite">考え中…</div>
+      </div>
+      <TpsMount sessionId="one" useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />
+    </div>)
+    const flow = view.container.querySelector('[data-chat-flow]')!
+    const row = flow.querySelector(':scope > [role="status"]')!
+    expect(row.querySelector('[data-tps-badge]')).not.toBeNull()
+    expect(flow.querySelector('article [data-tps-mount]')).toBeNull()
+    await act(async () => {
+      row.firstChild!.textContent = 'جارٍ التفكير…'
+      const clock = document.createElement('span')
+      clock.textContent = '15s'
+      row.appendChild(clock)
+    })
+    expect(row.lastChild).toBe(row.querySelector('[data-tps-mount]'))
+    expect(row.parentElement).toBe(flow)
+    const replacement = document.createElement('div')
+    replacement.setAttribute('role', 'status')
+    replacement.setAttribute('aria-live', 'polite')
+    replacement.textContent = 'Pensando…'
+    await act(async () => { row.replaceWith(replacement) })
+    expect(row.querySelector('[data-tps-mount]')).toBeNull()
+    expect(replacement.querySelector('[data-tps-badge]')).not.toBeNull()
   })
 
   it('declared plugin surface matches the apply contract', () => {
@@ -124,16 +166,36 @@ describe('ui-tps plugin registration', () => {
     expect(typeof apply).toBe('function')
   })
 
-  it('drops the turn-status entry when the registration disposes (HMR safety)', () => {
+  it('drops the session dock entry when the registration disposes (HMR safety)', async () => {
     const core = new SlotCore()
     core.register(
-      { name: 'root', children: { 'conversation.chat.turnStatus': { kind: 'single', scope: 'session' } } },
+      { name: 'root', children: { 'conversation.composer.dock': { kind: 'list', scope: 'session' } } },
       (() => null) as never,
     )
-    const dispose = core.register({ name: 'conversation.chat.turnStatus', locale: 'tps' }, TpsOverlay)
-    expect(core.entries('conversation.chat.turnStatus')).toHaveLength(1)
+    const dispose = core.register({ name: 'conversation.composer.dock', id: 'tps', locale: 'tps' }, TpsMount)
+    expect(core.entries('conversation.composer.dock')).toHaveLength(1)
     dispose()
-    expect(core.entries('conversation.chat.turnStatus')).toHaveLength(0)
+    expect(core.entries('conversation.composer.dock')).toHaveLength(0)
+
+    const snapshot = runningSnapshot()
+    const scope = document.createElement('div')
+    scope.setAttribute('data-conversation-scroll', '')
+    const flow = document.createElement('div')
+    flow.setAttribute('data-chat-flow', '')
+    const row = document.createElement('div')
+    row.setAttribute('role', 'status')
+    row.setAttribute('aria-live', 'polite')
+    flow.appendChild(row)
+    const dock = document.createElement('div')
+    scope.append(flow, dock)
+    document.body.appendChild(scope)
+    const view = render(<TpsMount sessionId="one" useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />, { container: dock })
+    expect(row.querySelector('[data-tps-mount]')).not.toBeNull()
+    view.unmount()
+    await act(async () => { row.appendChild(document.createElement('span')) })
+    expect(row.querySelector('[data-tps-mount]')).toBeNull()
+    expect(row.parentElement).toBe(flow)
+    scope.remove()
   })
 })
 
@@ -146,29 +208,29 @@ describe('TpsOverlay component', () => {
 
   it('renders nothing until the first live value, then keeps the dash during mid-turn pauses', () => {
     let snapshot = conversationSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     // First appearance waits for a value: no bare "TPS --" next to the row.
     expect(view.container.firstChild).toBeNull()
 
     // The first value arrives → the badge mounts with the value.
     snapshot = runningSnapshot()
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 3.00')
 
     // A mid-turn pause shows the dash (and value recovery shows the number
     // again without remounting).
     snapshot = { ...snapshot, partial: null }
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS --')
     snapshot = runningSnapshot()
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 3.00')
   })
 
   it('samples the streaming partial into a live rate and refreshes on deltas', async () => {
     vi.useFakeTimers()
     let snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 3.00')
 
     // A delta lands at t=2000: one more estimated token over a 2s span.
@@ -177,7 +239,7 @@ describe('TpsOverlay component', () => {
       partial: { turn: 1, step: 0, blocks: [{ kind: 'text', text: 'streaming text more' }] },
     }
     await act(async () => { vi.advanceTimersByTime(2_000) })
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     // 3 tokens at t≈0 + 1 token at t=2000 → 4 / 2s = 2.00.
     expect(view.container.textContent).toContain('TPS 2.00')
   })
@@ -185,7 +247,7 @@ describe('TpsOverlay component', () => {
   it('resets the live base when the streaming step changes', async () => {
     vi.useFakeTimers()
     let snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 3.00')
 
     // A new step restarts accumulation: the previous step's samples drop and
@@ -195,7 +257,7 @@ describe('TpsOverlay component', () => {
       ...snapshot,
       partial: { turn: 1, step: 1, blocks: [{ kind: 'text', text: 'x'.repeat(100) }] },
     }
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 13.0') // 13 tokens
 
     // The next delta of the new step appends: 5 more x's → 1 token.
@@ -204,7 +266,7 @@ describe('TpsOverlay component', () => {
       partial: { turn: 1, step: 1, blocks: [{ kind: 'text', text: 'x'.repeat(105) }] },
     }
     await act(async () => { vi.advanceTimersByTime(500) })
-    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    view.rerender(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     // 13 tokens at t≈0 + 1 at t=500 → 14 over the 1s floor.
     expect(view.container.textContent).toContain('TPS 14.0')
   })
@@ -212,7 +274,7 @@ describe('TpsOverlay component', () => {
   it('ages the live rate to a dash while the stream pauses', async () => {
     vi.useFakeTimers()
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     expect(view.container.textContent).toContain('TPS 3.00')
 
     // No new deltas: the cadence tick ages the sample past LIVE_STALE_MS.
@@ -224,7 +286,7 @@ describe('TpsOverlay component', () => {
     vi.useFakeTimers()
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')
     expect(badge).not.toBeNull()
     expect(badge!.className).toContain(css.root)
@@ -255,7 +317,7 @@ describe('TpsOverlay component', () => {
   it('leaving during the dwell cancels the fade', async () => {
     vi.useFakeTimers()
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
     fireEvent.mouseEnter(badge)
@@ -270,7 +332,7 @@ describe('TpsOverlay component', () => {
     vi.useFakeTimers()
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
     // Dwell the badge into the hidden state with the cursor parked on it.
@@ -307,7 +369,7 @@ describe('TpsOverlay component', () => {
     // Badge rect {0,0,100,30}; the padded hide area extends 8px beyond it.
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
     fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
@@ -334,7 +396,7 @@ describe('TpsOverlay component', () => {
     vi.useFakeTimers()
     mockBadgeRect({ left: 0, top: 0, right: 100, bottom: 30 })
     const snapshot = runningSnapshot()
-    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} t={t} />)
+    const view = render(<TpsOverlay useSession={useSessionOf(() => snapshot)} useChat={useChatOf(() => snapshot)} t={t} />)
     const badge = view.container.querySelector('[data-tps-badge]')!
 
     fireEvent.mouseMove(window, { clientX: 50, clientY: 15 })
