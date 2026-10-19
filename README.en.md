@@ -46,9 +46,9 @@ Prebuilt packages contain ready-to-load runtime code and require no Harness chec
 
 ## Changes in 0.3.1
 
-- DSH `0.2.x` compatibility: the host now wraps the running status row in `div[data-chat-running]`, so the badge targets that row and renders into its visible copy `span`. The 0.1.x direct `[role="status"]` mount is kept as a fallback.
+- DSH `0.2.x` compatibility: the host now nests the running status row one level under `[data-chat-flow]` inside `div[data-chat-running]`, so the badge descends into the flow, targets that row, and renders into its visible copy `span`. The 0.1.x `[role="status"]` mount is kept as a fallback.
 - The six `@deepseek-ai/dsh-client-*` peers now also accept `>=0.2.0-rc.1 <0.3.0-0` alongside `0.1.2-rc.1`.
-- New mount-seat regression test `tests/mount-seat.spec.tsx` covering both the 0.2.x and 0.1.x row shapes.
+- New mount-seat regression test `tests/mount-seat.spec.tsx` covering the 0.2.x row shape (including deeper nesting), row replacement between steps, and the 0.1.x row shape.
 
 ## Features
 
@@ -92,7 +92,7 @@ pnpm run build
 
 `pnpm run prepare` is the self-contained Git-install build. It does not read the sibling checkout and should produce the same runtime code as the full build. `pnpm run dev` watches source changes.
 
-The plugin obtains session hooks through `conversation.composer.dock`, then uses a React Portal to mount into the running row inside `[data-conversation-scroll]`: it prefers the direct `[data-chat-running]` child of `[data-chat-flow]` and renders into that row's visible copy `span` (`runningContent`), falling back to the 0.1.x direct `[role="status"][aria-live="polite"]` child. It manages only its own container and leaves host nodes in place.
+The plugin obtains session hooks through `conversation.composer.dock`, then uses a React Portal to mount into the running row inside `[data-conversation-scroll]`: it descends from the `[data-chat-flow]` column to `[data-chat-running]` (0.2.x nests it one level deeper) and renders into that row's visible copy `span` (`runningContent`), falling back to the 0.1.x `[role="status"][aria-live="polite"]`. It manages only its own container and leaves host nodes in place.
 
 ### Regenerate tokenizer data
 

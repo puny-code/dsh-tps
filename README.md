@@ -46,9 +46,9 @@ dsh plugin --profile web add './dsh-tps-0.3.1.tgz'
 
 ## 0.3.1 变更
 
-- 适配 DSH `0.2.x`：宿主把运行中的状态行包进 `div[data-chat-running]`，插件改为定位这一行、并渲染进其中可见文案 `span`；0.1.x 的「`[role="status"]` 直挂」方式保留。
+- 适配 DSH `0.2.x`：宿主把运行中的状态行包进 `div[data-chat-running]`（比 `[data-chat-flow]` 深一层），插件改为定位这一行、并渲染进其中可见文案 `span`；0.1.x 的「`[role="status"]` 直挂」方式保留。
 - 6 个 `@deepseek-ai/dsh-client-*` peer 追加 `>=0.2.0-rc.1 <0.3.0-0`，同时继续接受 `0.1.2-rc.1`。
-- 新增挂载点回归测试 `tests/mount-seat.spec.tsx`，覆盖 0.2.x 行结构与 0.1.x 行结构。
+- 新增挂载点回归测试 `tests/mount-seat.spec.tsx`，覆盖 0.2.x 行结构（含多层嵌套）、步骤间换行与 0.1.x 行结构。
 
 ## 功能
 
@@ -92,7 +92,7 @@ pnpm run build
 
 `pnpm run prepare` 是 Git 安装使用的自包含构建，不读取相邻 checkout；它应与完整构建生成一致的运行时代码。`pnpm run dev` 可监听源码变化。
 
-插件通过 `conversation.composer.dock` 获取会话上下文，再以 React Portal 挂进当前 `[data-conversation-scroll]` 里正在运行的那一行：优先取 `[data-chat-flow]` 的直接子元素 `[data-chat-running]`，渲染进其中的可见文案 `span`（`runningContent`）；找不到时退回 0.1.x 的 `[role="status"][aria-live="polite"]` 直接子元素。只管理插件自己的容器，不移动宿主节点。
+插件通过 `conversation.composer.dock` 获取会话上下文，再以 React Portal 挂进当前 `[data-conversation-scroll]` 里正在运行的那一行：在 `[data-chat-flow]` 列中向下找 `[data-chat-running]`（0.2.x 比 flow 深一层），渲染进其中可见文案 `span`（`runningContent`）；找不到时退回 0.1.x 的 `[role="status"][aria-live="polite"]`。只管理插件自己的容器，不移动宿主节点。
 
 ### 重新生成分词数据
 

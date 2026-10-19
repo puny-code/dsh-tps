@@ -43,19 +43,20 @@ function SessionTpsMount({ sessionId, ...props }: TpsMountProps) {
     let container: HTMLSpanElement | null = null
 
     // `[data-chat-flow]` also names the step-process body, so prefer the column
-    // that actually holds a running row; the direct-child role=status row is
-    // the 0.1.x shape and stays as the fallback.
+    // that actually holds a running row; the role=status element is the 0.1.x
+    // shape and stays as the fallback. 0.2.x buries the row one wrapper deep
+    // (`flow > div > div[data-chat-running]`), so both probes descend.
     const findStatusRow = (): Element | null => {
       const flows = scope.querySelectorAll('[data-chat-flow]')
       for (const candidate of flows) {
-        const runningRow = candidate.querySelector(':scope > [data-chat-running]')
+        const runningRow = candidate.querySelector('[data-chat-running]')
         if (runningRow !== null) {
           flow = candidate
           return runningRow
         }
       }
       flow = flows[0] ?? null
-      return flow?.querySelector(':scope > [role="status"][aria-live="polite"]') ?? null
+      return flow?.querySelector('[role="status"][aria-live="polite"]') ?? null
     }
 
     const reconcile = () => {
@@ -77,11 +78,14 @@ function SessionTpsMount({ sessionId, ...props }: TpsMountProps) {
     }
 
     const observer = new MutationObserver(records => {
-      // Streaming message interiors do not change the status seat. Watch direct
-      // flow/row changes and ancestor replacement, without rescanning each delta.
+      // Streaming message interiors do not change the status seat, so ignore
+      // those deltas; react to the row being rewritten, to a new row landing
+      // beside it, and to its removal. 0.2.x keeps the row under a wrapper, so
+      // the replaced row shows up in `removedNodes` rather than as the target.
       if (flow === null || !scope.contains(flow) || records.some(record =>
         record.target === seat || record.target === row || record.target === flow ||
-        record.target.contains(flow),
+        record.target.contains(flow) ||
+        record.addedNodes.length > 0 || record.removedNodes.length > 0,
       )) reconcile()
     })
     observer.observe(scope, { childList: true, subtree: true })

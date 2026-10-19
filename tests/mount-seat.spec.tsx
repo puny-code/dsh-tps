@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 /**
  * Mount-seat contract for the running-turn status row. DSH 0.1.x rendered the
- * row itself as `[role="status"][aria-live="polite"]`; 0.2.x nests it inside
- * `div[data-chat-running]` as a visually hidden status span, the divider, and
- * the visible content span last. The badge must ride that visible span so it
- * renders inline with the "Deep diving…" copy, and it must follow the row when
- * the host replaces the row between steps.
+ * row itself as `[role="status"][aria-live="polite"]`; 0.2.x nests it one
+ * wrapper deep inside `div[data-chat-flow]` and gives the row its own
+ * `div[data-chat-running]` holding a visually hidden status span, the divider,
+ * and the visible content span last. The badge must ride that visible span so
+ * it renders inline with the "Deep diving…" copy, and it must follow the row
+ * when the host replaces the row between steps.
  */
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { act, cleanup, render, waitFor } from '@testing-library/react'
@@ -41,16 +42,24 @@ function mount(running = true) {
   return <TpsMount sessionId="one" useSession={useSessionOf(running)} useChat={useChatOf(partial)} t={t} />
 }
 
+/**
+ * The 0.2.x running row as observed in the live DOM:
+ * `flow > div > div[data-chat-running] > [status span, divider, content span]`.
+ */
+function runningRow(text = 'Deep diving…') {
+  return <div>
+    <div data-chat-running="" className="xz4KEq_running">
+      <span role="status" aria-live="polite" aria-atomic="true" className="acc_hidden">Deep diving</span>
+      <span className="xz4KEq_runningDivider" aria-hidden="true" />
+      <span className="xz4KEq_runningContent"><span className="xz4KEq_runningText">{text}</span></span>
+    </div>
+  </div>
+}
+
 describe('running-row seat (DSH 0.2.x shape)', () => {
   it('renders the badge inside the visible content span, not the hidden status span', async () => {
     const view = render(<div data-conversation-scroll="">
-      <div data-chat-flow="">
-        <div data-chat-running="" className="xz4KEq_running">
-          <span role="status" aria-live="polite" aria-atomic="true" className="acc_hidden">Deep diving</span>
-          <span className="xz4KEq_runningDivider" aria-hidden="true" />
-          <span className="xz4KEq_runningContent">Deep diving…</span>
-        </div>
-      </div>
+      <div data-chat-flow="">{runningRow()}</div>
       {mount()}
     </div>)
     const row = view.container.querySelector('[data-chat-running]')!
@@ -68,21 +77,26 @@ describe('running-row seat (DSH 0.2.x shape)', () => {
     expect(status.querySelector('[data-tps-badge]')).toBeNull()
   })
 
-  it('moves the badge to the replacement row between steps', async () => {
+  it('finds a row that sits more than one wrapper deep (0.2.1 regression)', async () => {
     const view = render(<div data-conversation-scroll="">
       <div data-chat-flow="">
-        <div data-chat-running="" className="xz4KEq_running">
-          <span role="status" aria-live="polite" className="acc_hidden">Deep diving</span>
-          <span className="xz4KEq_runningDivider" aria-hidden="true" />
-          <span className="xz4KEq_runningContent">Deep diving…</span>
-        </div>
+        <div className="xz4KEq_flowItem"><div className="xz4KEq_group">{runningRow()}</div></div>
       </div>
       {mount()}
     </div>)
+    const content = view.container.querySelector('.xz4KEq_runningContent')!
+    await waitFor(() => { expect(content.querySelector('[data-tps-badge]')).not.toBeNull() })
+  })
+
+  it('moves the badge to the replacement row between steps', async () => {
+    const view = render(<div data-conversation-scroll="">
+      <div data-chat-flow="">{runningRow()}</div>
+      {mount()}
+    </div>)
     const oldRow = view.container.querySelector('[data-chat-running]')!
-    const flow = view.container.querySelector('[data-chat-flow]')!
     await waitFor(() => { expect(oldRow.querySelector('[data-tps-badge]')).not.toBeNull() })
 
+    const wrapper = oldRow.parentElement!
     const nextRow = document.createElement('div')
     nextRow.setAttribute('data-chat-running', '')
     const nextContent = document.createElement('span')
@@ -95,16 +109,18 @@ describe('running-row seat (DSH 0.2.x shape)', () => {
 
     await waitFor(() => { expect(nextContent.querySelector('[data-tps-badge]')).not.toBeNull() })
     expect(oldRow.querySelector('[data-tps-mount]')).toBeNull()
-    expect(flow.contains(nextRow)).toBe(true)
+    expect(wrapper.contains(nextRow)).toBe(true)
   })
 
   it('falls back to the last visible span when the content class token is absent', () => {
     const view = render(<div data-conversation-scroll="">
       <div data-chat-flow="">
-        <div data-chat-running="">
-          <span role="status" aria-live="polite">Deep diving</span>
-          <span aria-hidden="true" />
-          <span>Deep diving…</span>
+        <div>
+          <div data-chat-running="">
+            <span role="status" aria-live="polite">Deep diving</span>
+            <span aria-hidden="true" />
+            <span>Deep diving…</span>
+          </div>
         </div>
       </div>
       {mount()}
