@@ -8,10 +8,16 @@ A live TPS (tokens per second) badge beside the “Deep diving…” status in D
 
 ## Installation
 
-For **DSH `0.1.2-rc.1`**, run:
+For **DSH `0.1.2-rc.1` and `0.2.x`**. The prebuilt package from this fork's release is recommended (it already contains `lib/`, no compilation needed):
 
 ```sh
-dsh plugin --profile web add 'github:Small-tailqwq/dsh-tps'
+dsh plugin --profile web add 'https://github.com/puny-code/dsh-tps/releases/download/v0.3.1/dsh-tps-0.3.1.tgz'
+```
+
+Installing from source also works (it builds on install):
+
+```sh
+dsh plugin --profile web add 'github:puny-code/dsh-tps#dsh-0.2-compat'
 ```
 
 Restart your running DSH instance:
@@ -33,17 +39,23 @@ GitHub installs build the plugin automatically. If pnpm blocks build scripts, co
 For a prebuilt `.tgz`, substitute its actual path:
 
 ```sh
-dsh plugin --profile web add './dsh-tps-0.3.0-rc1-dom.tgz'
+dsh plugin --profile web add './dsh-tps-0.3.1.tgz'
 ```
 
 Prebuilt packages contain ready-to-load runtime code and require no Harness checkout or local compilation.
+
+## Changes in 0.3.1
+
+- DSH `0.2.x` compatibility: the host now wraps the running status row in `div[data-chat-running]`, so the badge targets that row and renders into its visible copy `span`. The 0.1.x direct `[role="status"]` mount is kept as a fallback.
+- The six `@deepseek-ai/dsh-client-*` peers now also accept `>=0.2.0-rc.1 <0.3.0-0` alongside `0.1.2-rc.1`.
+- New mount-seat regression test `tests/mount-seat.spec.tsx` covering both the 0.2.x and 0.1.x row shapes.
 
 ## Features
 
 - **Live rate:** a rolling 5-second window counts streamed output with the built-in DeepSeek-V3 tokenizer.
 - **Natural visibility:** appears with the first reading and disappears with the status row when the turn ends; shows `--` after roughly 1.5 seconds without output.
 - **Hover fade:** fades after a 2-second hover, becomes click-through, and returns 3 seconds after the pointer moves away.
-- **Language-independent mounting:** uses semantic DOM structure, without matching translated labels or CSS hashes.
+- **Language-independent mounting:** uses semantic DOM structure, without matching translated labels or CSS hashes; both the 0.2.x `div[data-chat-running]` and the 0.1.x `[role="status"]` row are supported.
 - **Front-end only:** reads DSH session snapshots without extra network requests. The native stats line continues to provide averages, first-token latency, and total usage.
 
 ## Installed but not visible
@@ -65,7 +77,7 @@ Normal installation requires no Harness source. Development typechecking and tes
 
 ```text
 <parent>/
-  deepseek-harness/  # dsh-v0.1.2-rc.1
+  deepseek-harness/  # dsh-v0.1.2-rc.1 or 0.2.1-rc.2
   dsh-tps/
 ```
 
@@ -80,7 +92,7 @@ pnpm run build
 
 `pnpm run prepare` is the self-contained Git-install build. It does not read the sibling checkout and should produce the same runtime code as the full build. `pnpm run dev` watches source changes.
 
-The plugin obtains session hooks through `conversation.composer.dock`, then uses a React Portal to mount into the direct `[role="status"][aria-live="polite"]` child of `[data-chat-flow]` within the current `[data-conversation-scroll]`. It manages only its own container and leaves host nodes in place.
+The plugin obtains session hooks through `conversation.composer.dock`, then uses a React Portal to mount into the running row inside `[data-conversation-scroll]`: it prefers the direct `[data-chat-running]` child of `[data-chat-flow]` and renders into that row's visible copy `span` (`runningContent`), falling back to the 0.1.x direct `[role="status"][aria-live="polite"]` child. It manages only its own container and leaves host nodes in place.
 
 ### Regenerate tokenizer data
 
